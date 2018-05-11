@@ -1,4 +1,6 @@
-public class Card{
+import java.util.*;
+
+public class Card {
     private String _name; //カードの名前
     private int _strength; //カードの強さ
     private String _effectText; //カード効果の説明文（余裕があれば実装）
@@ -20,16 +22,16 @@ public class Card{
 
     //カードの名前を返すメソッド
     public String getName(){
-        return _name;
+        return this._name;
     }
 
     //カードの強さを返すメソッド
     public int getStrength(){
-        return _strength;
+        return this._strength;
     }
 
     //カード効果の説明文を返すメソッド
     public String getEffectText(){
-        return _effectText;
+        return this._effectText;
     }
 }
