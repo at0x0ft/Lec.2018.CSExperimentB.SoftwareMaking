@@ -83,7 +83,7 @@
 
 #### メンバ
 
-* private String _IPAddress : IPアドレス
+* private String _ipAddress : IPアドレス
 
 * private String _name : プレイヤーの名前
 
@@ -95,17 +95,17 @@
 
 #### コンストラクタ
 
-public Player(String IPAddress, String name)
+public Player(String ipAddress, String name)
 
 コンストラクタ引数で変数を初期化. pointsは0で初期化. protectionはfalseで初期化. handはnullで初期化.
 
 #### メソッド
 
-* public String getIPAddress() : IPアドレスを返すメソッド (return IPAddress;)
+* public String getIPAddress() : IPアドレスを返すメソッド (return this._ipAddress;)
 
-* public String getName() : プレイヤーの名前を返すメソッド (return name;)
+* public String getName() : プレイヤーの名前を返すメソッド (return this._name;)
 
-* public int getPoints() : 現在の勝点を返すメソッド (return points;)
+* public int getPoints() : 現在の勝点を返すメソッド (return this._points;)
 
 * public void incrementPoints(int winPoint) : 勝点をwinPoint点だけ増やすメソッド (points += winPoint;)
 
