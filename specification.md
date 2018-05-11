@@ -255,7 +255,7 @@ public Round(LinkedList\<Player\> playerQueue, LinkedList\<Card\> deck, boolean 
 
   throwCard(loser.getHand())を実行した後、loser.setHand(null), loser.resetProtection()を実行し、loserList.add(loser)を実行する.
 
-* private Card selectCard(Card drawCard) : 山札から引いたカードを手札に残すか否かを確認するメソッド (実装の詳細は後ほど追記する). <!-- 後で考える. -->
+* private Card selectCard(Player selectPlayer, Card drawCard) : 山札から引いたカードを手札に残すか否かを確認するメソッド (実装の詳細は後ほど追記する). <!-- 後で考える. -->
 
   プレイヤーにカードの選択を促し、drawCardを選んだ場合には、そのままreturn drawcard;をとし、そうでなければ、return exchange(drawCard);とする.
 
