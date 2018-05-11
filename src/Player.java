@@ -1,19 +1,19 @@
 public class Player{
-    private String _IPAdress; //IPアドレス
+    private String _ipAddress; //IPアドレス
     private String _name; //プレイヤーの名前
     private int _points; //現在の勝点
     private boolean _protection; //僧侶の効果で守られているか、否か
     private Card _hand; //手札
 
-    Player(String _IPAdress, String _name, int _points, boolean _protection, Card _hand){
-        this._IPAdress = _IPAdress;
-        this._name = _name;
-        this._points = _points;
-        this._protection = _protection;
-        this._hand = _hand;
+    Player(String ipAddress, String name, int points, boolean protection, Card hand){
+        this._ipAddress = ipAddress;
+        this._name = name;
+        this._points = points;
+        this._protection = protection;
+        this._hand = hand;
     }
-    Player(String _IPAdress, String _name){
-        this(_IPAdress, _name, 0, false, null);
+    Player(String ipAddress, String name){
+        this(ipAddress, name, 0, false, null);
     }
     Player(){
         this(null, "名無しさん", 0, false, null);
@@ -21,7 +21,7 @@ public class Player{
 
     //IPアドレスを返すメソッド
     public String getIPAdress(){
-        return _IPAdress;
+        return _ipAddress;
     }
 
     //プレイヤーの名前を返すメソッド

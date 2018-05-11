@@ -11,7 +11,7 @@ public class Card{
     Card(String name, int strength){
         this(name, strength, "説明はありません");
     }
-    Card(Sting name){
+    Card(String name){
         this(name, 0, "説明はありません");
     }
     Card(){
