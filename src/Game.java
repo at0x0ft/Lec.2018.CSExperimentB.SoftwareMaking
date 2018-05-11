@@ -1,36 +1,36 @@
 public class Game{
   public static void main(String[] args){
 
-    private List <Player> playerList
+    private List <Player> _playerList;
 
-    private List <Card> cardList
+    private List <Card> _cardList;
 
-    private List <Round> finishedRoundList
+    private List <Round> _finishedRoundList;
 
-    private boolean finished
+    private boolean _finished;
 
-    private boolean hasDuchess
+    private boolean _hasDuchess;
 
-    private boolean hasPrince
+    private boolean _hasPrince;
 
-    private boolean hasKing
+    private boolean _hasKing;
 
-    public Gameclass(boolean hasDuchess. boolean hasPrince. boolean hasKing)
+    public Game(boolean hasDuchess. boolean hasPrince. boolean hasKing);
 
-    public static int getPlayerNumber ()
+    public static int getPlayerNumber ();
 
-    public static int getNowRound ()
+    public static int getNowRound ();
 
-    private hasFinished ()
+    private hasFinished ();
 
-    private String registerName ()
+    private String registerName ();
 
-    private String registerName ()
+    private String registerName ();
 
-    private player createPlayer (String playerName)
+    private player createPlayer (String playerName);
 
-    private Round startGame ()
+    private Round startGame ();
 
-    private boolean viewLogFile ()
+    private boolean viewLogFile ();
   }
 }
