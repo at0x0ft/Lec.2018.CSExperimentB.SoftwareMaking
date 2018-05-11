@@ -5,17 +5,17 @@ public class Player{
     private boolean _protection; //僧侶の効果で守られているか、否か
     private Card _hand; //手札
 
-    Player(String ipAddress, String name, int points, boolean protection, Card hand){
+    public Player(String ipAddress, String name, int points, boolean protection, Card hand){
         this._ipAddress = ipAddress;
         this._name = name;
         this._points = points;
         this._protection = protection;
         this._hand = hand;
     }
-    Player(String ipAddress, String name){
+    public Player(String ipAddress, String name){
         this(ipAddress, name, 0, false, null);
     }
-    Player(){
+    public Player(){
         this(null, "名無しさん", 0, false, null);
     }
 

@@ -3,18 +3,18 @@ public class Card{
     private int _strength; //カードの強さ
     private String _effectText; //カード効果の説明文（余裕があれば実装）
 
-    Card(String name, int strength, String effectText){
+    public Card(String name, int strength, String effectText){
         this._name = name;
         this._strength = strength;
         this._effectText = effectText;
     }
-    Card(String name, int strength){
+    public Card(String name, int strength){
         this(name, strength, "説明はありません");
     }
-    Card(String name){
+    public Card(String name){
         this(name, 0, "説明はありません");
     }
-    Card(){
+    public Card(){
         this("名無しのカード", 0, "説明はありません");
     }
 
