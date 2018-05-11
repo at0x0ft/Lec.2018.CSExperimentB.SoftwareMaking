@@ -141,7 +141,7 @@ public Player(String name, int strength, String effectText)
 
 * public String getName() : カードの名前を返すメソッド (return _name;)
 
-* public int getStrength() : カードの強さを返すメソッド (return _points;)
+* public int getStrength() : カードの強さを返すメソッド (return _strength;)
 
 * (public String getEffectText() : カード効果の説明文を返すメソッド (return _effectText;))
 
