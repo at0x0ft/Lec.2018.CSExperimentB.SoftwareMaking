@@ -157,11 +157,11 @@ public XXXX()
 
 #### メンバ
 
-* private List\<Player\> _playerList : ゲーム参加者のリスト (プレイヤークラスのリスト, 2人以上7人以下? (最初の実装では2人固定))
+* private LinkedList\<Player\> _playerList : ゲーム参加者のリスト (プレイヤークラスのリスト, 2人以上7人以下? (最初の実装では2人固定))
 
-* private List\<Card\> _cardList : 使うカードのリスト (カードクラスのリスト)
+* private LinkedList\<Card\> _cardList : 使うカードのリスト (カードクラスのリスト)
 
-* private List\<Round\> _finishedRoundList : ラウンドのリスト
+* private LinkedList\<Round\> _finishedRoundList : ラウンドのリスト
 
 * private boolean _finished : ゲームが終了したか否か
 
@@ -191,7 +191,7 @@ public Game(boolean hasDuchess, boolean hasPrince, boolean hasKing)
 
 * private Round startGame() : ゲームを開始し、終了したラウンドクラスを返すメソッド
 
-  _playerList、_deckをコピー (新しいList\<Player\>、List\<Card\>インスタンスを作る) & シャッフル (ソートの逆で、リストの順番をランダムにする. 乱数を使って実装すれば良いような気もするが、そもそも便利なライブラリがある可能性も高い.) し、新しく作成したインスタンス二つをRoundクラスのコンストラクタ引数として渡す. その後、新しく生成したRoundインスタンスでstart()メソッドを呼び出し、Roundが終了したら、Roundインスタンスを戻り値として返す.
+  _playerList、_deckをコピー (新しいLinkedList\<Player\>、LinkedList\<Card\>インスタンスを作る) & シャッフル (ソートの逆で、リストの順番をランダムにする. 乱数を使って実装すれば良いような気もするが、そもそも便利なライブラリがある可能性も高い.) し、新しく作成したインスタンス二つをRoundクラスのコンストラクタ引数として渡す. その後、新しく生成したRoundインスタンスでstart()メソッドを呼び出し、Roundが終了したら、Roundインスタンスを戻り値として返す.
 
 * (private boolean viewLogFile() : ゲーム終了時にゲームログファイルを出力するファイル (デバッグに役立つのでできれば実装したいところではあるが一応オプション))
 
@@ -201,13 +201,13 @@ public Game(boolean hasDuchess, boolean hasPrince, boolean hasKing)
 
 #### メンバ
 
-* private List\<Player\> _playerQueue : ゲーム参加者の順番リスト
+* private LinkedList\<Player\> _playerQueue : ゲーム参加者の順番リスト
 
-* private List\<Card\> _deck : 山札
+* private LinkedList\<Card\> _deck : 山札
 
-* private List\<Card\> _discard : 捨て札
+* private LinkedList\<Card\> _discard : 捨て札
 
-* private List\<Round\> _loserList : 脱落したプレイヤーのリスト
+* private LinkedList\<Round\> _loserList : 脱落したプレイヤーのリスト
 
 * (private boolean _hasDuchess : 女公爵が山札に含まれているか否か (オプションカード実装時のみ作るメンバ).)
 
@@ -217,13 +217,13 @@ public Game(boolean hasDuchess, boolean hasPrince, boolean hasKing)
 
 #### コンストラクタ
 
-public Round(List\<Player\> playerQueue, List\<Card\> deck, boolean hasDuchess, boolean hasPrince, boolean hasKing)
+public Round(LinkedList\<Player\> playerQueue, LinkedList\<Card\> deck, boolean hasDuchess, boolean hasPrince, boolean hasKing)
 
 コンストラクタ引数の値でメンバを初期化. それ以外のメンバは全てインスタンスを生成しておく.
 
 #### メソッド
 
-* public List\<Player\> start() : LoveLetterを1ラウンド開始するメソッド.
+* public LinkedList\<Player\> start() : LoveLetterを1ラウンド開始するメソッド.
 
   以下の内容をwhile(true)ループ内で繰り返すのみ. (一枚目手札引くときのことを考えていない!)
 
