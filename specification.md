@@ -10,24 +10,24 @@
 
 * ゲームで使用するカードは16枚. 具体的な内訳は以下の通り.
 
-| カードの種類 | 強さ | 効果 | 枚数 |
-|:------------:|:----:|:----:|:----:|
-| 兵士 | 1 | プレイヤーを一人指定し、兵士以外のカードの種類を宣言. 指定されたプレイヤーの持っているカードと一致した場合、そのプレイヤーはゲームから脱落. | 5 |
-| 道化 | 2 | 指定したプレイヤーの手札を見る(他のプレイヤーには見せない). | 2 |
-| 騎士 | 3 | プレイヤーを一人指定し、手札のカードを見せ合う. 強さの低いプレイヤーが脱落. | 2 |
-| 僧侶 | 4 | 次の自分の番まで相手のカードの効果を受けない (効果の対象にはなるが無効となる). | 2 |
-| 魔術師 | 5 | プレイヤーを一人指定し、手札のカードを捨てさせ、山札からカードを一枚引かせる (姫以外のカードの効果は発動しない). | 2 |
-| 将軍 | 6 | プレイヤーを一人指定し、お互いの手札を交換する. | 1 |
-| 大臣 | 7 | 山札からカードを引いた際、2枚の手札の合計が12以上なら脱落. | 1 |
-| 姫 | 8 | このカードを捨て札にしたプレイヤーは脱落する. | 1 |
+| カードの種類 |   強さ  |                                    効果                                   |   枚数  |
+|:------:|:-----:|:-----------------------------------------------------------------------:|:-----:|
+|   兵士   |   1   | プレイヤーを一人指定し、兵士以外のカードの種類を宣言. 指定されたプレイヤーの持っているカードと一致した場合、そのプレイヤーはゲームから脱落. |   5   |
+|   道化   |   2   |                     指定したプレイヤーの手札を見る(他のプレイヤーには見せない).                     |   2   |
+|   騎士   |   3   |                 プレイヤーを一人指定し、手札のカードを見せ合う. 強さの低いプレイヤーが脱落.                 |   2   |
+|   僧侶   |   4   |                次の自分の番まで相手のカードの効果を受けない (効果の対象にはなるが無効となる).                |   2   |
+|   魔術師  |   5   |        プレイヤーを一人指定し、手札のカードを捨てさせ、山札からカードを一枚引かせる (姫以外のカードの効果は発動しない).       |   2   |
+|   将軍   |   6   |                         プレイヤーを一人指定し、お互いの手札を交換する.                        |   1   |
+|   大臣   |   7   |                     山札からカードを引いた際、2枚の手札の合計が12以上なら脱落.                     |   1   |
+|    姫   |   8   |                         このカードを捨て札にしたプレイヤーは脱落する.                         |   1   |
 
 なお、拡張カードは以下の通り (余裕があれば実装する). 強さが同じカードと入れ替えて使う. (強さ8の他のカードは更に必要になったら追記 & 追加実装)
 
-| カードの種類 | 強さ | 効果 | 枚数 |
-|:------------:|:----:|:----:|:----:|
-| 女公爵 | 7 | 山札からこのカードを引いた際、2枚の手札の合計が12以上ならこのカードを必ず捨て札とする. | 1 |
-| 王子 | 8 | 姫と同じ効果 (プレイヤーが女性のみなら入れるかも (オプション)). | 1 |
-| 王 | 0 | このカードを引いたプレイヤー脱落 (5人以上でプレイする時のみ追加推奨). | 1 |
+| カードの種類 |   強さ  |                       効果                      |   枚数  |
+|:------:|:-----:|:---------------------------------------------:|:-----:|
+|   女公爵  |   7   | 山札からこのカードを引いた際、2枚の手札の合計が12以上ならこのカードを必ず捨て札とする. |   1   |
+|   王子   |   8   |      姫と同じ効果 (プレイヤーが女性のみなら入れるかも (オプション)).      |   1   |
+|    王   |   0   |     このカードを引いたプレイヤー脱落 (5人以上でプレイする時のみ追加推奨).     |   1   |
 
 * 勝利条件
 
@@ -83,15 +83,15 @@
 
 #### メンバ
 
-* private String IPAdress : IPアドレス
+* private String _IPAdress : IPアドレス
 
-* private String name : プレイヤーの名前
+* private String _name : プレイヤーの名前
 
-* private int points : 現在の勝点
+* private int _points : 現在の勝点
 
-* private boolean protection : 僧侶の効果で守られているか、否か
+* private boolean _protection : 僧侶の効果で守られているか、否か
 
-* private Card hand : 手札
+* private Card _hand : 手札
 
 #### コンストラクタ
 
@@ -125,11 +125,11 @@ public Player(String IPAdress, String name)
 
 #### メンバ
 
-* private String name : カードの名前
+* private String _name : カードの名前
 
-* private int strength : カードの強さ
+* private int _strength : カードの強さ
 
-* (private String effectText : カードの効果の説明文 (余裕があれば実装))
+* (private String _effectText : カードの効果の説明文 (余裕があれば実装))
 
 #### コンストラクタ
 
@@ -139,11 +139,11 @@ public Player(String name, int strength, String effectText)
 
 #### メソッド
 
-* public String getName() : カードの名前を返すメソッド (return name;)
+* public String getName() : カードの名前を返すメソッド (return _name;)
 
-* public int getStrength() : カードの強さを返すメソッド (return points;)
+* public int getStrength() : カードの強さを返すメソッド (return _points;)
 
-* (public String getEffectText() : カード効果の説明文を返すメソッド (return effectText;))
+* (public String getEffectText() : カード効果の説明文を返すメソッド (return _effectText;))
 
 ### 各カードクラス (カードクラスを継承する)
 
@@ -157,33 +157,33 @@ public XXXX()
 
 #### メンバ
 
-* private List\<Player\> playerList : ゲーム参加者のリスト (プレイヤークラスのリスト, 2人以上7人以下? (最初の実装では2人固定))
+* private List\<Player\> _playerList : ゲーム参加者のリスト (プレイヤークラスのリスト, 2人以上7人以下? (最初の実装では2人固定))
 
-* private List\<Card\> cardList : 使うカードのリスト (カードクラスのリスト)
+* private List\<Card\> _cardList : 使うカードのリスト (カードクラスのリスト)
 
-* private List\<Round\> finishedRoundList : ラウンドのリスト
+* private List\<Round\> _finishedRoundList : ラウンドのリスト
 
-* private boolean finished : ゲームが終了したか否か
+* private boolean _finished : ゲームが終了したか否か
 
-* (private boolean hasDuchess : 女公爵が山札に含まれているか否か (オプションカード実装時のみ作るメンバ).)
+* (private boolean _hasDuchess : 女公爵が山札に含まれているか否か (オプションカード実装時のみ作るメンバ).)
 
-* (private boolean hasPrince : 王子が山札に含まれているか否か (オプションカード実装時のみ作るメンバ).)
+* (private boolean _hasPrince : 王子が山札に含まれているか否か (オプションカード実装時のみ作るメンバ).)
 
-* (private boolean hasKing : 王が山札に含まれているか否か (オプションカード実装時のみ作るメンバ).)
+* (private boolean _hasKing : 王が山札に含まれているか否か (オプションカード実装時のみ作るメンバ).)
 
 #### コンストラクタ
 
 public Game(boolean hasDuchess, boolean hasPrince, boolean hasKing)
 
-コンストラクタ引数の値でメンバを初期化. finishedメンバはfalseで初期化. それ以外のメンバは全てインスタンスを生成しておく.
+コンストラクタ引数の値でメンバを初期化. _finishedメンバはfalseで初期化. それ以外のメンバは全てインスタンスを生成しておく.
 
 #### メソッド
 
-* public static int getPlayerNumber() : 現在のゲーム参加者人数を返すメソッド (playerList.size()とか使えば一瞬で実装できる (多分).)
+* public static int getPlayerNumber() : 現在のゲーム参加者人数を返すメソッド (_playerList.size()とか使えば一瞬で実装できる (多分).)
 
-* public static int getNowRound() : 現在のラウンド (1以上) を返すメソッド (roundList.size() + 1 で一瞬で実装できるはず (多分).)
+* public static int getNowRound() : 現在のラウンド (1以上) を返すメソッド (_roundList.size() + 1 で一瞬で実装できるはず (多分).)
 
-* private hadFinished() : このゲームが終了したかどうかを判定するメソッド (return finished;).
+* private hadFinished() : このゲームが終了したかどうかを判定するメソッド (return _finished;).
 
 * private String registerName() : セッションしたプレイヤーに名前の入力を促すメソッド. 基本的には下記のcreatePlayerの第一引数内で呼び出す.
 
@@ -191,7 +191,7 @@ public Game(boolean hasDuchess, boolean hasPrince, boolean hasKing)
 
 * private Round startGame() : ゲームを開始し、終了したラウンドクラスを返すメソッド
 
-  playerList、deckをコピー (新しいList\<Player\>、List\<Card\>インスタンスを作る) & シャッフル (ソートの逆で、リストの順番をランダムにする. 乱数を使って実装すれば良いような気もするが、そもそも便利なライブラリがある可能性も高い.) し、新しく作成したインスタンス二つをRoundクラスのコンストラクタ引数として渡す. その後、新しく生成したRoundインスタンスでstart()メソッドを呼び出し、Roundが終了したら、Roundインスタンスを戻り値として返す.
+  _playerList、_deckをコピー (新しいList\<Player\>、List\<Card\>インスタンスを作る) & シャッフル (ソートの逆で、リストの順番をランダムにする. 乱数を使って実装すれば良いような気もするが、そもそも便利なライブラリがある可能性も高い.) し、新しく作成したインスタンス二つをRoundクラスのコンストラクタ引数として渡す. その後、新しく生成したRoundインスタンスでstart()メソッドを呼び出し、Roundが終了したら、Roundインスタンスを戻り値として返す.
 
 * (private boolean viewLogFile() : ゲーム終了時にゲームログファイルを出力するファイル (デバッグに役立つのでできれば実装したいところではあるが一応オプション))
 
@@ -201,23 +201,23 @@ public Game(boolean hasDuchess, boolean hasPrince, boolean hasKing)
 
 #### メンバ
 
-* private List\<Player\> playerQueue : ゲーム参加者の順番リスト
+* private List\<Player\> _playerQueue : ゲーム参加者の順番リスト
 
-* private List\<Card\> deck : 山札
+* private List\<Card\> _deck : 山札
 
-* private List\<Card\> discard : 捨て札
+* private List\<Card\> _discard : 捨て札
 
-* private List\<Round\> loserList : 脱落したプレイヤーのリスト
+* private List\<Round\> _loserList : 脱落したプレイヤーのリスト
 
-* (private boolean hasDuchess : 女公爵が山札に含まれているか否か (オプションカード実装時のみ作るメンバ).)
+* (private boolean _hasDuchess : 女公爵が山札に含まれているか否か (オプションカード実装時のみ作るメンバ).)
 
-* (private boolean hasPrince : 王子が山札に含まれているか否か (オプションカード実装時のみ作るメンバ).)
+* (private boolean _hasPrince : 王子が山札に含まれているか否か (オプションカード実装時のみ作るメンバ).)
 
-* (private boolean hasKing : 王が山札に含まれているか否か (オプションカード実装時のみ作るメンバ).)
+* (private boolean _hasKing : 王が山札に含まれているか否か (オプションカード実装時のみ作るメンバ).)
 
 #### コンストラクタ
 
-public Game(List\<Player\> playerQueue, List\<Card\> deck, boolean hasDuchess, boolean hasPrince, boolean hasKing)
+public Round(List\<Player\> playerQueue, List\<Card\> deck, boolean hasDuchess, boolean hasPrince, boolean hasKing)
 
 コンストラクタ引数の値でメンバを初期化. それ以外のメンバは全てインスタンスを生成しておく.
 

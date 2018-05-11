@@ -2,6 +2,26 @@ import java.io.*;
 import java.net.*;
 
 public class Round {
+
+    private List<Player> _playerQueue;   // ゲーム参加者の順番リスト
+
+    private List<Card> _deck;    // 山札
+
+    private List<Card> _discard; // 捨て札
+
+    private List<Round> _loserList;  // 脱落したプレイヤーのリスト
+
+    private boolean _hasDuchess; // 女公爵が山札に含まれているか否か
+
+    private boolean _hasPrince;  // 王子が山札に含まれているか否か
+
+    private boolean _hasKing;    // 王が山札に含まれているか否か
+
+    public Round(List<Player> playerQueue, List<Card> deck, boolean hasDuchess, boolean hasPrince, boolean hasKing) {
+        // 初期化処理
+        this.playerQueue 
+    }
+
     public static final int PORT = 8080; // Set the Port Number.
 
     public static void main(String[] args) throws IOException {
