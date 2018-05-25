@@ -16,13 +16,13 @@ public class Game {
     private boolean _hasKing;   //王が山札に含まれているか否か
 
     public Game(boolean hasDuchess. boolean hasPrince. boolean hasKing) {
-		this._playerList = new LinkedList<Player>();
-		this._cardList = new LinkedList<Card>();
-		this._finishedRoundList = new LinkedList<Round>();
-		this._finished = false;
-		this._hasDuchess = hasDuchess;
-		this._hasPrince = hasPrince;
-		this._hasKing = hasKing;
+        this._playerList = new LinkedList<Player>();
+        this._cardList = new LinkedList<Card>();
+        this._finishedRoundList = new LinkedList<Round>();
+        this._finished = false;
+        this._hasDuchess = hasDuchess;
+        this._hasPrince = hasPrince;
+        this._hasKing = hasKing;
     }
 
     //現在のゲームの参加者人数を返すメソッド
