@@ -36,8 +36,9 @@ public class Client implements IConnectable {
                 }    // 4debug
                 return true;
             }
+
             System.out.println("Failed to establish connection...");
-            
+
             switch(retryConfirmYN()) {
                 case "y": {
                     continue;
