@@ -4,110 +4,72 @@ import java.io.*;
 import java.net.*;
 import main.LoveLetter;
 
-public class ClientThread extends ManageableThread {
-    private Socket _socket;
+public class ClientThread {
     private Server _server;
+    private StateManager _stateManager;
+
+    private Socket _socket;
     private BufferedReader _exin;
     private PrintWriter _exout;
-    private String _playerName;
-    public String playerName() {
-        return this._playerName;
+
+    private String _clientName;
+    public String clientName() {
+        return this._clientName;
     }
 
-    public boolean isInProcess() {
-        return super.isInProcess();
-    }
-    public void isInProcess(boolean value) {
-        super.isInProcess(value);
-    }
-
-    public ClientThread(Socket socket, Server server) {
-        super();
-        this._socket = socket;
+    public ClientThread(Server server, StateManager stateManager, Socket socket) {
         this._server = server;
-        try {
-            this._exin = new BufferedReader(new InputStreamReader(this._socket.getInputStream())); // Set the buffer for data serving.
-            this._exout = new PrintWriter(new BufferedWriter(new OutputStreamWriter(this._socket.getOutputStream())), true); // Set the buffer for sending.
-        }
-        catch(IOException ioe) {
-            dispose();
-        }
+        this._stateManager = stateManager;
+        this._socket = socket;
     }
 
     @Override
     public void run() {
         try {
-            this._exout.println(this._server.masterPlayerName());
-    
-            String response = this._exin.readLine();
-            switch(response) {
-                case "y": {
-                    break;
-                }
-                case "n": {
-                    return;
-                }
+            this._exin = new BufferedReader(new InputStreamReader(this._socket.getInputStream())); // Set the buffer for data serving.
+            this._exout = new PrintWriter(new BufferedWriter(new OutputStreamWriter(this._socket.getOutputStream())), true); // Set the buffer for sending.
+
+            if(!this._registrationRequest()) {
+                this._stateManager.removeCandidate(this);
+                return;
             }
-    
-            this._playerName = this._exin.readLine();
-            if(!participantsCheck(playerName())) {
+
+            this._clientName = this._exin.readLine();
+
+            if(!this._stateManager.masterCheck(this)) {
                 // Access permission denied...
                 this._exout.println("n");
                 return;
             }
+            else {
+                this._exout.println("y");
+            }
 
-            this._exout.println("y");
+            while(!this._stateManager.playing()) {
+                this._stateManager.waitThread();
+            }
 
-            // notifying register finished.
-            super.isInProcess(false);   // 4debug
-
-            System.out.println(this._playerName + " is now taking part in!");
-
-            // System.out.println("isActiveflg : " + super.isActive() + ", isInProcess : " + super.isInProcess()); // 4debug
-
-            // wait and start the game
-            while(true);    // 4debug
+            // start game!
         }
         catch(IOException ioe) {
             ioe.printStackTrace();
         }
         finally {
-            dispose();
-        }
-    }
-
-    private synchronized static boolean participantsCheck(String playerName) throws IOException {
-        System.out.println("Connected from " + playerName + "!");
-        return acceptYN();
-    }
-
-    private synchronized static boolean acceptYN() throws IOException {
-        String check = null;
-        while (true) {
-            System.out.println("Would you accept this player? Enter y/n");
-            check = LoveLetter.cInputLn();
-            if(check.equals("y")) {
-                return true;
-            }
-            else if(check.equals("n")) {
-                return false;
-            }
-            System.out.println("Wrong character! Please enter the correct ones.");
-        }
-    }
-
-    @Override
-    public void dispose() {
-        System.out.println("disposed ct...");    // 4debug
-        super.dispose();
-        if(this._socket != null) {
-            try {
+            if(this._socket != null) {
                 this._socket.close();
             }
-            catch(IOException ioe) {
-                ioe.printStackTrace();
+        }
+    }
+
+    private boolean registrationRequest() {
+        this._exout.println(this._server.masterclientName());
+
+        switch(this._exin.readLine()) {
+            case "y": {
+                return true;
             }
-            finally {
+            default: {
+                return false;
             }
         }
     }

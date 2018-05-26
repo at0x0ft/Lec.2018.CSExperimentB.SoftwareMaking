@@ -8,86 +8,30 @@ import interfaces.IConnectable;
 
 public class Server implements IConnectable {
     public static final int PORT = 8080; // Set the Port Number.
-    private ThreadManager _threadManager;
-    
+    private ServerSocket _serverSocket;
+
     private String _masterPlayerName;
     public String masterPlayerName() {
         return this._masterPlayerName;
     }
 
-    public static final int MAXPLAYERNUM = 6;
-    private int _playerNum;
-    public int playerNum() {
-        return this._playerNum;
-    }
-
-    private boolean _isNowPlaying;
-    public boolean isNowPlaying() {
-        return this._isNowPlaying;
-    }
-    public void isNowPlaying(boolean value) {
-        this._isNowPlaying = value;
-    }
-
-    private Thread _connectionWaitingThread;
-    private boolean startInvitation() {
-        System.out.println("Waiting for other player(s)...");
-
-        Server server = this;
-        ThreadManager tm = this._threadManager;
-        
-        try {
-            this._connectionWaitingThread = new Thread(new Runnable() {
-                public void run() {
-                    while(true) {
-                        try {
-                            tm.addCandidate(new ClientThread((new ServerSocket(Server.PORT)).accept(), server));
-                        }
-                        catch(IOException ioe) {
-                            ioe.printStackTrace();
-                        }
-                        finally {
-                        }
-                    }
-                }
-            });
-            this._connectionWaitingThread.start();
-            this._connectionWaitingThread.join();
-        }
-        catch(InterruptedException ie) {
-            if(this._isNowPlaying) {
-                return true;
-            }
-            ie.printStackTrace();
-        }
-        finally {
-        }
-    
-        return false;
-    }
-    public void finishInvitaion() {
-        this._connectionWaitingThread.interrupt();
-    }
+    private StateManager _stateManager;
 
     public Server(String masterPlayerName) {
         this._masterPlayerName = masterPlayerName;
     }
-
+    
     public boolean establishConnection() throws IOException {
-        System.out.println("How many players do you want to play with?");
-        isNowPlaying(false);
-        this._playerNum = playerNumInput();
-
-        this._threadManager = new ThreadManager(this);
-        this._threadManager.start();
+        System.out.println("How many players do you want to play with (including you) ?");
+        this._stateManager = StateManager(this, playerNumInput());
 
         return startInvitation();
     }
 
-    private int playerNumInput() throws IOException {
+    private int playerNumInput() throws IOException {   // remark
         int check = 0;
         while (true) {
-            System.out.print("Please input number from 2 to " + MAXPLAYERNUM + ". : ");
+            System.out.print("Please input number from 2 to " + this._stateManager.MAXPLAYERNUM + ". : ");
             try {
                 check = Integer.parseInt(LoveLetter.cInputLn());
                 if(check >= 2 && check <= MAXPLAYERNUM) {
@@ -103,10 +47,44 @@ public class Server implements IConnectable {
         }
     }
 
-    public void dispose() {
-        System.out.println("disposed sever...");    // 4debug
-        if(this._threadManager != null) {
-            this._threadManager.dispose();
+    private boolean startInvitation() throws IOException {
+        this._serverSocket = new ServerSocket(Server.PORT);
+        try {
+            System.out.println("Waiting for other player(s)...");
+            this._serverSocket.setSoTimeout(1000);  // Timeout every 1000 [ms].
+            while(true) {   // critical section...
+                while(this._stateManager.inviting() && this._stateManager.isFullCandidates()) {
+                    this._stateManager.waitThread();
+                }
+                if(!this._stateManager.inviting()) {
+                        break;
+                }
+
+                this._stateManager.addCandidate(new ClientThread(this._serverSocket.accept(), server));
+            }
+
+            // waiting for removing all clients which failed to get 
+            while(!this._stateManager.playing()) {
+                this._stateManager.waitThread();
+            }
         }
+        catch(InterruptedException ie) {
+            ie.printStackTrace();
+            // clientThreads dispose
+            if(this._serverSocket != null) {
+                this._serverSocket.close();
+            }
+            return false;
+        }
+        catch(IOException ioe) {
+            ioe.printStackTrace();
+            // clientThreads dispose
+            if(this._serverSocket != null) {
+                this._serverSocket.close();
+            }
+            return false;
+        }
+
+        return true;
     }
 }

@@ -13,7 +13,7 @@ public class LoveLetter {
         return _cin.readLine();
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         _cin = new BufferedReader(new InputStreamReader(System.in));
 
         System.out.println("Welcome to LoveLetter Game!");

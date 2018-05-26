@@ -25,8 +25,10 @@ public class Client implements IConnectable {
 
     public boolean establishConnection() throws IOException {
         while(true) {
-            if(connect()) {
-                return true;
+            try {
+                if(connect()) {
+                    return true;
+                }
             }
             System.out.println("Failed to establish connection...");
             
@@ -61,7 +63,7 @@ public class Client implements IConnectable {
         }
     }
     
-    private boolean connect() throws IOException {
+    private boolean connect() throws IOException, SocketException {
         this._socket = new Socket(InetAddress.getByName(HOSTNAME), Server.PORT); // Making the socket.
         this._exin = new BufferedReader(new InputStreamReader(this._socket.getInputStream())); // Set the buffer for data serving.
         this._exout = new PrintWriter(new BufferedWriter(new OutputStreamWriter(this._socket.getOutputStream())), true); // Set the buffer for sending.
@@ -90,12 +92,6 @@ public class Client implements IConnectable {
             case "n": {
                 System.out.println("Access denied...");
                 return false;
-            }
-        }
-
-        while(true) {   // 4debug
-            if(LoveLetter.cInputLn().equals("f")) { // 4debug
-                break;  // 4debug
             }
         }
 
