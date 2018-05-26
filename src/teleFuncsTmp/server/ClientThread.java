@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.*;
 import main.LoveLetter;
 
-public class ClientThread {
+public class ClientThread extends Thread {
     private Server _server;
     private StateManager _stateManager;
 
@@ -29,7 +29,7 @@ public class ClientThread {
             this._exin = new BufferedReader(new InputStreamReader(this._socket.getInputStream())); // Set the buffer for data serving.
             this._exout = new PrintWriter(new BufferedWriter(new OutputStreamWriter(this._socket.getOutputStream())), true); // Set the buffer for sending.
 
-            if(!this._registrationRequest()) {
+            if(!registrationRequest()) {
                 this._stateManager.removeCandidate(this);
                 return;
             }
@@ -55,14 +55,19 @@ public class ClientThread {
             ioe.printStackTrace();
         }
         finally {
-            if(this._socket != null) {
-                this._socket.close();
+            try {
+                if(this._socket != null) {
+                    this._socket.close();
+                }
+            }
+            catch(IOException ioe) {
+                ioe.printStackTrace();
             }
         }
     }
 
-    private boolean registrationRequest() {
-        this._exout.println(this._server.masterclientName());
+    private boolean registrationRequest() throws IOException {
+        this._exout.println(this._server.masterPlayerName());
 
         switch(this._exin.readLine()) {
             case "y": {

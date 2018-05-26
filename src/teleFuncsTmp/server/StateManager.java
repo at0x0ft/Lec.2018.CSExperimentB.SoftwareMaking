@@ -1,7 +1,10 @@
 package server;
 
 // import java.;
+import java.io.*;
 import java.util.ArrayList;
+import java.lang.*;
+import main.LoveLetter;
 
 
 public class StateManager {
@@ -15,11 +18,11 @@ public class StateManager {
     private int _registeredPlayerNum;
 
     public synchronized boolean isFullCandidates() {
-        return this._candidates.size() + this._registeredPlayerNum >= this._playerNum;
+        return this._candidates.size() + this._registeredPlayerNum >= this._playerNum - 1;
     }
 
     private boolean isReady2Start() {
-        return this._playerNum == this._registeredPlayerNum;
+        return this._playerNum - 1 == this._registeredPlayerNum;
     }
 
     private boolean clientIsEmpty() {
@@ -40,7 +43,7 @@ public class StateManager {
         return this._state == 2;
     }
 
-    public ThreadState(Server server, int playerNum) {
+    public StateManager(Server server, int playerNum) {
         this._server = server;
         this._candidates = new ArrayList<ClientThread>();
         this._clientPlayers = new ClientThread[playerNum - 1];
@@ -63,8 +66,8 @@ public class StateManager {
         }
     }
 
-    private synchronized boolean masterCheck(ClientThread clientThread) throws IOException {
-        if(!this._inviting) {
+    public synchronized boolean masterCheck(ClientThread clientThread) throws IOException {
+        if(!inviting()) {
             removeCandidate(clientThread);
             if(clientIsEmpty()) {
                 proceedState();
@@ -90,7 +93,7 @@ public class StateManager {
                 proceedState();
             }
 
-            while(!playing) {
+            while(!playing()) {
                 waitThread();
             }
             restartAllWaitingThreads();
@@ -120,14 +123,23 @@ public class StateManager {
     }
     
     private boolean _pauseThread;
+    private int _waitingThreadNum;
+    public int waitingThreadNum() {
+        return this._waitingThreadNum;
+    }
     public synchronized void waitThread() {
         if(this._pauseThread == false) {
-            this._threadWaitingState = true;
+            this._pauseThread = true;
         }
 
         this._waitingThreadNum++;
         while(this._pauseThread) {
-            wait();
+            try {
+                wait();
+            }
+            catch(InterruptedException ie) {
+                ie.printStackTrace();
+            }
         }
         this._waitingThreadNum--;
     }
@@ -135,5 +147,11 @@ public class StateManager {
     public synchronized void restartAllWaitingThreads() {
         this._pauseThread = false;
         notifyAll();
+    }
+
+    public synchronized void printAllRegisteredPlayerName() {   // 4debug
+        for (int i = 0; i < this._clientPlayers.length; i++) {
+            System.out.println(this._clientPlayers[i].clientName());
+        }
     }
 }

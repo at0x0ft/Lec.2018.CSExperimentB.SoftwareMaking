@@ -25,10 +25,13 @@ public class Client implements IConnectable {
 
     public boolean establishConnection() throws IOException {
         while(true) {
-            try {
-                if(connect()) {
-                    return true;
-                }
+            if(connect()) {
+                while(true) {   // 4debug
+                    if(LoveLetter.cInputLn().equals("f")) {
+                        break;
+                    }
+                }    // 4debug
+                return true;
             }
             System.out.println("Failed to establish connection...");
             

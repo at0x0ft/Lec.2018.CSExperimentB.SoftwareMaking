@@ -72,9 +72,9 @@ public class LoveLetter {
             ioe.printStackTrace();
         }
         finally {
-            if(gameBase != null) {
-                gameBase.dispose();
-            }
+            // if(gameBase != null) {
+            //     gameBase.dispose();
+            // }
         }
     }
 

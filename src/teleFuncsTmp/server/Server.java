@@ -23,7 +23,7 @@ public class Server implements IConnectable {
     
     public boolean establishConnection() throws IOException {
         System.out.println("How many players do you want to play with (including you) ?");
-        this._stateManager = StateManager(this, playerNumInput());
+        this._stateManager = new StateManager(this, playerNumInput());
 
         return startInvitation();
     }
@@ -34,7 +34,7 @@ public class Server implements IConnectable {
             System.out.print("Please input number from 2 to " + this._stateManager.MAXPLAYERNUM + ". : ");
             try {
                 check = Integer.parseInt(LoveLetter.cInputLn());
-                if(check >= 2 && check <= MAXPLAYERNUM) {
+                if(check >= 2 && check <= this._stateManager.MAXPLAYERNUM) {
                     return check;
                 }
 
@@ -51,7 +51,7 @@ public class Server implements IConnectable {
         this._serverSocket = new ServerSocket(Server.PORT);
         try {
             System.out.println("Waiting for other player(s)...");
-            this._serverSocket.setSoTimeout(1000);  // Timeout every 1000 [ms].
+            // this._serverSocket.setSoTimeout(1000);  // Timeout every 1000 [ms].
             while(true) {   // critical section...
                 while(this._stateManager.inviting() && this._stateManager.isFullCandidates()) {
                     this._stateManager.waitThread();
@@ -60,21 +60,15 @@ public class Server implements IConnectable {
                         break;
                 }
 
-                this._stateManager.addCandidate(new ClientThread(this._serverSocket.accept(), server));
+                // try{
+                    this._stateManager.addCandidate(new ClientThread(this, this._stateManager, this._serverSocket.accept()));
+                // }
             }
 
             // waiting for removing all clients which failed to get 
             while(!this._stateManager.playing()) {
                 this._stateManager.waitThread();
             }
-        }
-        catch(InterruptedException ie) {
-            ie.printStackTrace();
-            // clientThreads dispose
-            if(this._serverSocket != null) {
-                this._serverSocket.close();
-            }
-            return false;
         }
         catch(IOException ioe) {
             ioe.printStackTrace();
@@ -85,6 +79,8 @@ public class Server implements IConnectable {
             return false;
         }
 
+
+        this._stateManager.printAllRegisteredPlayerName();  // 4debug
         return true;
     }
 }
