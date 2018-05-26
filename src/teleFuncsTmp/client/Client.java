@@ -26,6 +26,9 @@ public class Client implements IConnectable {
     public boolean establishConnection() throws IOException {
         while(true) {
             if(connect()) {
+                System.out.println("Accepted!");
+                System.out.println("Please wait for starting game...");
+
                 while(true) {   // 4debug
                     if(LoveLetter.cInputLn().equals("f")) {
                         break;
