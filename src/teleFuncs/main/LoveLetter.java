@@ -42,7 +42,7 @@ public class LoveLetter {
     }
 
     private static void start(String playerName) {
-        System.out.println("Would you create new gameroom or find other game rooms?");
+        System.out.println("Would you wait for the other player or find thed other player?");
 
         IConnectable gameBase = null;
         try {
@@ -81,7 +81,7 @@ public class LoveLetter {
     private static String createOrFind() {
         String check = null;
         while(true) {
-            System.out.print("Enter c (create new gameroom) / f (find other game rooms) : ");
+            System.out.print("Enter w (wair for the other player) / f (find the other player) : ");
             try {
                 check = cInputLn();
                 if(check.equals("c") || check.equals("f")) {

@@ -3,34 +3,21 @@ package server;
 import java.io.*;
 import java.net.*;
 import java.lang.InterruptedException;
+import java.util.function.Predicate;
 import main.LoveLetter;
 import interfaces.IConnectable;
 
 public class Server implements IConnectable {
     public static final int PORT = 8080; // Set the Port Number.
-    private ThreadManager _threadManager;
-    
     private String _masterPlayerName;
     public String masterPlayerName() {
         return this._masterPlayerName;
     }
+    
+    private ServerSocket _serverSocket;
+    private Socket _socket;
 
-    public static final int MAXPLAYERNUM = 6;
-    private int _playerNum;
-    public int playerNum() {
-        return this._playerNum;
-    }
-
-    private boolean _isNowPlaying;
-    public boolean isNowPlaying() {
-        return this._isNowPlaying;
-    }
-    public void isNowPlaying(boolean value) {
-        this._isNowPlaying = value;
-    }
-
-    private Thread _connectionWaitingThread;
-    private boolean startInvitation() {
+    private boolean startInvitation() throws IOException {
         System.out.println("Waiting for other player(s)...");
 
         Server server = this;
@@ -41,7 +28,8 @@ public class Server implements IConnectable {
                 public void run() {
                     while(true) {
                         try {
-                            tm.addCandidate(new ClientThread((new ServerSocket(Server.PORT)).accept(), server));
+                            Socket s = ().accept();
+                            tm.addCandidate(new ClientThread(, server));
                         }
                         catch(IOException ioe) {
                             ioe.printStackTrace();
@@ -74,16 +62,20 @@ public class Server implements IConnectable {
     }
 
     public boolean establishConnection() throws IOException {
-        System.out.println("How many players do you want to play with?");
-        isNowPlaying(false);
+        try {
+            this._serverSocket = new ServerSocket(Server.PORT);
+            this._socket = this._serverSocket.accept();
+        }
+        finally {
+        }
         this._playerNum = playerNumInput();
-
+        
         this._threadManager = new ThreadManager(this);
         this._threadManager.start();
-
+        
         return startInvitation();
     }
-
+    
     private int playerNumInput() throws IOException {
         int check = 0;
         while (true) {
@@ -93,7 +85,7 @@ public class Server implements IConnectable {
                 if(check >= 2 && check <= MAXPLAYERNUM) {
                     return check;
                 }
-
+                
                 System.out.println("Wrong number! Please enter the correct ones.");
             }
             catch (NumberFormatException nfe) {
@@ -102,11 +94,13 @@ public class Server implements IConnectable {
             }
         }
     }
-
+    
     public void dispose() {
-        System.out.println("disposed sever...");    // 4debug
-        if(this._threadManager != null) {
-            this._threadManager.dispose();
+        if(this._socket != null) {
+            this._socket.close();
+        }
+        if(this._serverSocket != null) {
+            this._serverSocket.close();
         }
     }
 }
