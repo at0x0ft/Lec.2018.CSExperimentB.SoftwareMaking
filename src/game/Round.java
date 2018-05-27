@@ -3,13 +3,13 @@ import java.util.*;
 
 public class Round {
 
-    private LinkedList<Player> _playerQueue;   // ゲーム参加者の順番リスト
+    private Player[] _playerQueue;   // ゲーム参加者の順番リスト
 
-    private LinkedList<Card> _deck;    // 山札
+    private Card[] _deck;    // 山札
 
-    private LinkedList<Card> _discard; // 捨て札
+    private Card[] _discard; // 捨て札
 
-    private LinkedList<Round> _loserList;  // 脱落したプレイヤーのリスト
+    private Round[] _loserList;  // 脱落したプレイヤーのリスト
 
     private boolean _hasDuchess; // 女公爵が山札に含まれているか否か
 
@@ -21,8 +21,8 @@ public class Round {
         // 初期化処理
         this._playerQueue = playerQueue;
         this._deck = deck;
-        this._discard = new LinkedList<Card>();
-        this._loserList = new LinkedList<Round>();
+        this._discard = new Card[16];
+        this._loserList = new Round[/*プレイ人数*/]();
         this._hasDuchess = hasDuchess;
         this._hasPrince = hasPrince;
         this._hasKing = hasKing;
