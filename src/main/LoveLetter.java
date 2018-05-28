@@ -44,7 +44,7 @@ public class LoveLetter {
     private static void start(String playerName) {
         System.out.println("Would you create new gameroom or find other game rooms?");
 
-        IConnectable gameBase = null;
+        GameBase gameBase = null;
         try {
             switch(createOrFind()) {
                 case "c": {
@@ -65,8 +65,7 @@ public class LoveLetter {
             }
 
             // start game
-            System.out.println("Now, let's start the game!");   // 4debug
-            // System.out.println("Finished... : " + cInputLn());  // 4debug
+            gameBase.startGame();
         }
         catch(IOException ioe) {
             ioe.printStackTrace();

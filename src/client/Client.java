@@ -4,9 +4,10 @@ import java.io.*;
 import java.net.*;
 import server.Server;
 import main.LoveLetter;
+import main.GameBase;
 import interfaces.IConnectable;
 
-public class Client implements IConnectable {
+public class Client extends GameBase {
     private BufferedReader _exin;
     private PrintWriter _exout;
     

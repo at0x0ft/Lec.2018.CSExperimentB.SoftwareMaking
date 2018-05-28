@@ -4,9 +4,14 @@ import java.io.*;
 import java.net.*;
 import java.lang.InterruptedException;
 import main.LoveLetter;
+import main.GameBase;
 import interfaces.IConnectable;
+import game.Game;
 
-public class Server implements IConnectable {
+public class Server extends GameBase {
+
+    // fields and the constructor Part
+
     public static final int PORT = 8080; // Set the Port Number.
     private ServerSocket _serverSocket;
 
@@ -21,6 +26,8 @@ public class Server implements IConnectable {
         this._masterPlayerName = masterPlayerName;
     }
     
+    // Connection Part
+
     public boolean establishConnection() throws IOException {
         System.out.println("How many players do you want to play with (including you) ?");
         this._stateManager = new StateManager(this, playerNumInput());
@@ -82,5 +89,15 @@ public class Server implements IConnectable {
 
         this._stateManager.printAllRegisteredPlayerName();  // 4debug
         return true;
+    }
+
+    // Game Part
+
+    private Game _game;
+
+    public void startGame() {
+        System.out.println("Now, let's start the game!");
+
+        // create game class from here
     }
 }
