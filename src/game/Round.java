@@ -3,13 +3,13 @@ import java.util.*;
 
 public class Round {
 
-    private Player[] _playerQueue;   // ゲーム参加者の順番リスト
+    private ArrayList<Player> _playerQueue;   // ゲーム参加者の順番リスト
 
-    private Card[] _deck;    // 山札
+    private ArrayList<Card> _deck;    // 山札
 
-    private Card[] _discard; // 捨て札
+    private ArrayList<Card> _discard; // 捨て札
 
-    private Round[] _loserList;  // 脱落したプレイヤーのリスト
+    private ArrayList<Round> _loserList;  // 脱落したプレイヤーのリスト
 
     private boolean _hasDuchess; // 女公爵が山札に含まれているか否か
 
@@ -17,19 +17,19 @@ public class Round {
 
     private boolean _hasKing;    // 王が山札に含まれているか否か
 
-    public Round(LinkedList<Player> playerQueue, LinkedList<Card> deck, boolean hasDuchess, boolean hasPrince, boolean hasKing) {
+    public Round(ArrayList<Player> playerQueue, ArrayList<Card> deck, boolean hasDuchess, boolean hasPrince, boolean hasKing) {
         // 初期化処理
         this._playerQueue = playerQueue;
         this._deck = deck;
-        this._discard = new Card[16];
-        this._loserList = new Round[/*プレイ人数*/]();
+        this._discard = new ArrayList<Card>();
+        this._loserList = new ArrayList<Round>();
         this._hasDuchess = hasDuchess;
         this._hasPrince = hasPrince;
         this._hasKing = hasKing;
     }
 
     // LoveLetterのゲームの1ラウンドを開始するメソッド.
-    public LinkedList<Player> start() {
+    public ArrayList<Player> start() {
         while(true) {
             turn();
             if(finished()) {
@@ -84,7 +84,7 @@ public class Round {
 
     // playerをplayerQueueの末尾に追加するメソッド
     private void turnAround(Player player) {
-        _playerQueue(player);
+        this._playerQueue.add(player);
     }
 
     // cardを捨て札の一番上に追加するメソッド
