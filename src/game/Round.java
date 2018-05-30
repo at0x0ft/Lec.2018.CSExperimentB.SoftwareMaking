@@ -37,14 +37,17 @@ public class Round {
                 break;
             }
         }
+        return this._playerQueue;
     }
 
     // 一人のプレイヤーがカードを引き、その効果を発揮させるメソッド
     private void turn() {
         Player turnPlayer = this._playerQueue.pop();
+        /*** 全員に通知 "turnPlayerのターンです" ***/
         turnPlayer.resetProtection();
 
         Card drawCard = this._deck.pop();
+        /*** 引いたプレイヤーに通知 "引いたカードの名前、強さ、説明" ***/
         if(checkKing(drawCard)) {
             lose(turnPlayer);
             throwCard(drawCard);
@@ -94,6 +97,8 @@ public class Round {
 
     // 負けプレイヤーの敗戦処理を行うメソッド
     private void lose(Player loser) {
+        /*** 全員に通知 "loserが脱落しました" ***/
+        /*** 全員に通知 "残りプレイヤー: a, b, ..." ***/
         throwCard(loser.getHand());
         loser.setHand(null);
         loser.resetProtection();
@@ -102,9 +107,13 @@ public class Round {
 
     // 山札から引いたカードを手札に残すか否かを確認するメソッド (詳細は後ほど)
     private Card selectCard(Player selectPlayer, Card drawCard) {
-        // 選択を促すウィンドウの表示
-        // return drawCard;
-        // return selectPlayer.exchange(draw);
+        /*** 選択を促す "Select discard. Enter 0/1. " ***/
+        if(0/*** 引いたカードなら ***/) {
+            return drawCard;
+        }
+        else {
+            return selectPlayer.exchange(draw);
+        }
     }
 
     // cardが王であるかどうかをチェックするメソッド
