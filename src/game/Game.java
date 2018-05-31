@@ -59,14 +59,14 @@ public class Game {
         }   // 4debug
     }
 
-    // shuffle操作の定義. (1 ~ rangeまでの値のランダムな番号の並びをint型配列として返す.)
+    // shuffle操作の定義. (0 ~ range - 1までの値のランダムな番号の並びをint型配列として返す.)
     public static int[] generateRandomNumOrder(int[] result, int range) {
         if(result == null || result.length != range) {
             result = new int[range];
         }
 
         for(int i = 0; i < range; i++) {
-            result[i] = i + 1;
+            result[i] = i;
         }
 
         SecureRandom rdm = new SecureRandom();
