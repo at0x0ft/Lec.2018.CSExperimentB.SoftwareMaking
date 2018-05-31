@@ -28,6 +28,28 @@ public class Console {
         System.out.println();
     }
 
+    private static String osName() {
+        return System.getProperty("os.name").toLowerCase();
+    }
+
+    public static void clearScreen(long ms) throws IOException {
+        try {
+            if(ms != 0) {
+                Thread.sleep(ms);
+            }
+
+            if(osName().equals("linux") || osName().equals("mac")) {
+                new ProcessBuilder("bash", "-c", "clear").inheritIO().start().waitFor();
+            }
+            else if(osName().equals("windows")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            }
+        }
+        catch(InterruptedException e){
+            e.printStackTrace();
+        }
+    }
+
     public static String readLn() {
         return _in.next();
     }

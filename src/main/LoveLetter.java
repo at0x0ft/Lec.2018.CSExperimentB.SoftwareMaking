@@ -9,20 +9,19 @@ import server.Server;
 
 public class LoveLetter {
     public static void main(String[] args) throws IOException {
+        Console.initialize();
+
+        Console.clearScreen(0);
+
+        Console.writeLn("Welcome to LoveLetter Game!");
+        Console.write("Please enter your player name : ");
+        
+        
+        String playerName = Console.readLn();
+        Console.writeLn("Hi, " + playerName + "!");
+
         try {
-            Console.initialize();
-
-            Console.writeLn("Welcome to LoveLetter Game!");
-            
-            Console.write("Please enter your player name : ");
-            String playerName = Console.readLn();
-
-            Console.writeLn("Hi, " + playerName + "!");
-
-            Console.newLn();
             start(playerName);
-
-            Console.writeLn("See you.");
         }
         catch(IOException ioe) {
             ioe.printStackTrace();
@@ -31,7 +30,10 @@ public class LoveLetter {
             if(Console.isScNull()) {
                 Console.dispose();
             }
+            Console.writeLn("See you.");
         }
+
+        Console.clearScreen(750);
     }
 
     private static void start(String playerName) throws IOException {
@@ -54,6 +56,8 @@ public class LoveLetter {
             if(!gameBase.establishConnection()) {
                 return;
             }
+
+            Console.clearScreen(1000);
 
             // start game
             gameBase.startGame();
