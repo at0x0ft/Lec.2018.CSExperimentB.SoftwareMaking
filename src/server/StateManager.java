@@ -4,7 +4,7 @@ package server;
 import java.io.*;
 import java.util.ArrayList;
 import java.lang.*;
-import main.LoveLetter;
+import main.Console;
 import interfaces.IDisposable;
 
 
@@ -13,6 +13,7 @@ public class StateManager implements IDisposable {
     private ArrayList<ClientThread> _candidates;
     private ClientThread[] _clientPlayers;
 
+    public static final int MINPLAYERNUM = 2;
     public static final int MAXPLAYERNUM = 6;
 
     private int _playerNum;
@@ -77,13 +78,12 @@ public class StateManager implements IDisposable {
             return false;
         }
 
-        System.out.println("Connected from " + clientThread.clientName() + "!");
-        if(!acceptionYN()) {
+        if(!acceptionYN(clientThread)) {
             removeCandidate(clientThread);
             return false;
         }
         else {
-            System.out.println(clientThread.clientName() + " is now registered!");
+            Console.writeLn(clientThread.clientName() + " is now registered!");
         }
 
         registerClient(clientThread);
@@ -103,19 +103,13 @@ public class StateManager implements IDisposable {
         return true;
     }
 
-    private boolean acceptionYN() throws IOException {
-        String check = null;
-        while (true) {
-            System.out.println("Would you accept this player? Enter y/n");
-            check = LoveLetter.cInputLn();
-            if(check.equals("y")) {
-                return true;
-            }
-            else if(check.equals("n")) {
-                return false;
-            }
-            System.out.println("Wrong character! Please enter the correct ones.");
-        }
+    private boolean acceptionYN(ClientThread ct) throws IOException {
+        return Console.readTorF(
+            "y",
+            "n",
+            "Connected from " + ct.clientName() + "!",
+            "Would you accept this player? Enter y/n : "
+        );
     }
 
     private void registerClient(ClientThread clientThread) {
@@ -152,11 +146,11 @@ public class StateManager implements IDisposable {
 
     public synchronized void printAllRegisteredPlayerName() {   // 4debug
         for (int i = 0; i < this._clientPlayers.length; i++) {
-            System.out.println(this._clientPlayers[i].clientName());
+            Console.writeLn(this._clientPlayers[i].clientName());
         }
     }
 
-    public void dispose() throws IOException {
+    public synchronized void dispose() throws IOException {
         synchronized(this) {
             if(this._candidates != null && this._candidates.size() != 0) {
                 for (ClientThread ct : this._candidates) {

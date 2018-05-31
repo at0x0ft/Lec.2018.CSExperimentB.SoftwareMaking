@@ -3,7 +3,7 @@ package server;
 import java.io.*;
 import java.net.*;
 import java.lang.InterruptedException;
-import main.LoveLetter;
+import main.Console;
 import main.GameBase;
 import interfaces.IDisposable;
 // import game.Game;
@@ -12,7 +12,13 @@ public class Server extends GameBase /*implements IDisposable*/ {
 
     // fields and the constructor Part
 
-    public static final int PORT = 8080; // Set the Port Number.
+    public static final int MINPORTNUM = 1024;
+    public static final int MAXPORTNUM = 30000;
+    private int _port;
+    public int port() {
+        return this._port;
+    }
+
     private ServerSocket _serverSocket;
 
     private String _masterPlayerName;
@@ -29,36 +35,46 @@ public class Server extends GameBase /*implements IDisposable*/ {
     // Connection Part
 
     public boolean establishConnection() throws IOException {
-        System.out.println("How many players do you want to play with (including you) ?");
+        Console.newLn();
+
+        while(true) {
+            this._port = portNumInput();
+            try {
+                this._serverSocket = new ServerSocket(port());
+                break;
+            }
+            catch(BindException be) {
+                Console.writeLn("Your server PORT : " + port() + " is already used.");
+                Console.writeLn("Please assign another PORT again...");
+                continue;
+            }
+        }
         this._stateManager = new StateManager(this, playerNumInput());
 
         return startInvitation();
     }
 
-    private int playerNumInput() throws IOException {   // remark
-        int check = 0;
-        while (true) {
-            System.out.print("Please input number from 2 to " + this._stateManager.MAXPLAYERNUM + ". : ");
-            try {
-                check = Integer.parseInt(LoveLetter.cInputLn());
-                if(check >= 2 && check <= this._stateManager.MAXPLAYERNUM) {
-                    return check;
-                }
+    private int portNumInput() {
+        return Console.readNum(
+            Server.MINPORTNUM,
+            Server.MAXPORTNUM,
+            "Setting this server's PORT.",
+            "Please input PORT ("+ Server.MINPORTNUM + " <= PORT <= " + Server.MAXPORTNUM + ") : "
+        );
+    }
 
-                System.out.println("Wrong number! Please enter the correct ones.");
-            }
-            catch (NumberFormatException nfe) {
-                System.out.println("Wrong number! Please enter the correct ones.");
-                continue;
-            }
-        }
+    private int playerNumInput() {
+        return Console.readNum(
+            this._stateManager.MINPLAYERNUM,
+            this._stateManager.MAXPLAYERNUM,
+            "How many players do you want to play with (including you) ?",
+            "Please input number from 2 to " + this._stateManager.MAXPLAYERNUM + ". : "
+        );
     }
 
     private boolean startInvitation() throws IOException {
-        this._serverSocket = new ServerSocket(Server.PORT);
         try {
-            System.out.println("Waiting for other player(s)...");
-            // this._serverSocket.setSoTimeout(1000);  // Timeout every 1000 [ms].
+            Console.writeLn("Waiting for other player(s)...");
             while(true) {   // critical section...
                 while(this._stateManager.inviting() && this._stateManager.isFullCandidates()) {
                     this._stateManager.waitThread();
@@ -67,9 +83,7 @@ public class Server extends GameBase /*implements IDisposable*/ {
                         break;
                 }
 
-                // try{
-                    this._stateManager.addCandidate(new ClientThread(this, this._stateManager, this._serverSocket.accept()));
-                // }
+                this._stateManager.addCandidate(new ClientThread(this, this._stateManager, this._serverSocket.accept()));
             }
 
             // waiting for removing all clients which failed to get 
@@ -96,12 +110,12 @@ public class Server extends GameBase /*implements IDisposable*/ {
     // private Game _game;
 
     public void startGame() {
-        System.out.println("Now, let's start the game!");
+        Console.writeLn("Now, let's start the game!");
 
         // create game class from here
     }
 
-    public void dispose() throws IOException {
+    public synchronized void dispose() throws IOException {
         if(this._stateManager != null) {
             this._stateManager.dispose();
         }

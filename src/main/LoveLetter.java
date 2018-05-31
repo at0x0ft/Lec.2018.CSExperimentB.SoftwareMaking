@@ -3,46 +3,38 @@ package main;
 import java.io.*;
 import java.net.*;
 import java.lang.*;
+import main.Console;
 import client.Client;
 import server.Server;
 
 public class LoveLetter {
-    private static BufferedReader _cin;
-    public static String cInputLn() throws IOException {
-        return _cin.readLine();
-    }
-    
     public static void main(String[] args) throws IOException {
-        _cin = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            Console.initialize();
 
-        System.out.println("Welcome to LoveLetter Game!");
+            Console.writeLn("Welcome to LoveLetter Game!");
+            
+            Console.write("Please enter your player name : ");
+            String playerName = Console.readLn();
 
-        String playerName = registerPlayerName();
+            Console.writeLn("Hi, " + playerName + "!");
 
-        System.out.println("Hi, " + playerName + "!");
+            Console.newLn();
+            start(playerName);
 
-        start(playerName);
-
-        System.out.println("See you.");
-    }
-    
-    private static String registerPlayerName() {
-        while(true) {
-            System.out.print("Please enter your player name : ");
-            try {
-                return cInputLn();
-            }
-            catch(IOException ioe) {
-                System.out.println("IOException occured.");
-                System.out.println("Please enter again...");
-                continue;
+            Console.writeLn("See you.");
+        }
+        catch(IOException ioe) {
+            ioe.printStackTrace();
+        }
+        finally {
+            if(Console.isScNull()) {
+                Console.dispose();
             }
         }
     }
 
     private static void start(String playerName) throws IOException {
-        System.out.println("Would you create new gameroom or find other game rooms?");
-
         GameBase gameBase = null;
         try {
             switch(createOrFind()) {
@@ -77,21 +69,11 @@ public class LoveLetter {
     }
 
     private static String createOrFind() {
-        String check = null;
-        while(true) {
-            System.out.print("Enter c (create new gameroom) / f (find other game rooms) : ");
-            try {
-                check = cInputLn();
-                if(check.equals("c") || check.equals("f")) {
-                    return check;
-                }
-            }
-            catch (IOException ioe) {
-                System.out.println("IOError Occured.");
-                System.out.println("Please enter again...");
-                continue;
-            }
-            System.out.println("Wrong character! Please enter the correct ones.");
-        }
+        return Console.readAorB(
+            "c",
+            "f",
+            "Would you create new gameroom or find other game rooms?",
+            "Enter c (create new gameroom) / f (find other game rooms) : "
+            );
     }
 }

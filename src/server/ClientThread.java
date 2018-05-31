@@ -2,7 +2,6 @@ package server;
 
 import java.io.*;
 import java.net.*;
-import main.LoveLetter;
 import interfaces.IDisposable;
 
 public class ClientThread extends Thread implements IDisposable {
@@ -80,7 +79,7 @@ public class ClientThread extends Thread implements IDisposable {
         }
     }
 
-    public void dispose() throws IOException {
+    public synchronized void dispose() throws IOException {
         if(this._socket != null) {
             try {
                 this._socket.close();
