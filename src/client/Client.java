@@ -5,7 +5,6 @@ import java.net.*;
 import server.Server;
 import main.LoveLetter;
 import main.GameBase;
-import interfaces.IConnectable;
 import interfaces.IDisposable;
 
 public class Client extends GameBase /*implements IDisposable*/ {

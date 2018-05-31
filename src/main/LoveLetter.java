@@ -5,7 +5,6 @@ import java.net.*;
 import java.lang.*;
 import client.Client;
 import server.Server;
-import interfaces.IConnectable;
 
 public class LoveLetter {
     private static BufferedReader _cin;
