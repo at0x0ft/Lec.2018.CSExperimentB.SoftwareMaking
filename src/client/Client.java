@@ -114,6 +114,7 @@ public class Client extends GameBase {
         Console.writeLn("Now, let's start the game!");
 
         // create game class from here
+        while(Console.readLn().equals("f"));
     }
 
     public synchronized void dispose() throws IOException {

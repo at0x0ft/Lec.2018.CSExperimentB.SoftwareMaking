@@ -1,4 +1,4 @@
-package game.card;
+package game.cards;
 
 public class Monk extends Card {
 public Monk() {

@@ -6,7 +6,7 @@ import java.lang.InterruptedException;
 import main.Console;
 import main.GameBase;
 import interfaces.IDisposable;
-// import game.Game;
+import game.Game;
 
 public class Server extends GameBase /*implements IDisposable*/ {
 
@@ -107,12 +107,13 @@ public class Server extends GameBase /*implements IDisposable*/ {
 
     // Game Part
 
-    // private Game _game;
+    private Game _game;
 
     public void startGame() {
         Console.writeLn("Now, let's start the game!");
 
         // create game class from here
+        _game = new Game(this._masterPlayerName, this._stateManager.getClientPlayerList());
     }
 
     public synchronized void dispose() throws IOException {

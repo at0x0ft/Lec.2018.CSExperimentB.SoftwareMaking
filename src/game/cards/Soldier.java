@@ -1,4 +1,4 @@
-package game.card;
+package game.cards;
 
 public class Soldier extends Card {
 public Soldier() {

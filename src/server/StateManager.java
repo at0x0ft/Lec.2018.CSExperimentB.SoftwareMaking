@@ -13,6 +13,10 @@ public class StateManager implements IDisposable {
     private ArrayList<ClientThread> _candidates;
     private ClientThread[] _clientPlayers;
 
+    public synchronized ClientThread[] getClientPlayerList() {    // remark
+        return this._clientPlayers;
+    }
+
     public static final int MINPLAYERNUM = 2;
     public static final int MAXPLAYERNUM = 6;
 

@@ -2,7 +2,7 @@ package game;
 
 import java.io.*;
 import java.util.*;
-import game.card.*;
+import game.cards.*;
 
 public class Round {
 
@@ -148,11 +148,11 @@ public class Round {
     private boolean finished() {
         return _playerQueue.size() == 1 || _deck.size() == 1;
     }
-昇順
+
     // 勝者を決定し、勝ち点を与えるメソッド
     private void winJudge() {
         if(_playerQueue.size() != 1) {
-            sort(_playerQueue, /* 降順にソート */);
+            // sort(_playerQueue, /* 降順にソート */);
             // 勝者の数が複数人なら引き分け
 
             
