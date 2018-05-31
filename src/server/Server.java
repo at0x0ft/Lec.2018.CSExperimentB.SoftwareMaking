@@ -5,10 +5,12 @@ import java.net.*;
 import java.lang.InterruptedException;
 import main.LoveLetter;
 import main.GameBase;
+import main.GameBase;
 import interfaces.IConnectable;
-import game.Game;
+import interfaces.IDisposable;
+// import game.Game;
 
-public class Server extends GameBase {
+public class Server extends GameBase /*implements IDisposable*/ {
 
     // fields and the constructor Part
 
@@ -93,11 +95,26 @@ public class Server extends GameBase {
 
     // Game Part
 
-    private Game _game;
+    // private Game _game;
 
     public void startGame() {
         System.out.println("Now, let's start the game!");
 
         // create game class from here
+    }
+
+    public void dispose() throws IOException {
+        if(this._stateManager != null) {
+            this._stateManager.dispose();
+        }
+
+        if(this._serverSocket != null) {
+            try {
+                this._serverSocket.close();
+            }
+            catch(IOException ioe) {
+                ioe.printStackTrace();
+            }
+        }
     }
 }

@@ -1,4 +1,4 @@
-import java.util.*;
+package game.card;
 
 public class Soldier extends Card {
 public Soldier() {

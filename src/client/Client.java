@@ -6,8 +6,9 @@ import server.Server;
 import main.LoveLetter;
 import main.GameBase;
 import interfaces.IConnectable;
+import interfaces.IDisposable;
 
-public class Client extends GameBase {
+public class Client extends GameBase /*implements IDisposable*/ {
     private BufferedReader _exin;
     private PrintWriter _exout;
     
@@ -126,11 +127,13 @@ public class Client extends GameBase {
         }
     }
 
-    public void dispose() {
-        System.out.println("disposed clt...");    // 4debug
+    public void startGame() {
+        System.out.println("Now, let's start the game!");
 
-        this._exin = null;
-        this._exout = null;
+        // create game class from here
+    }
+
+    public void dispose() throws IOException {
         if(this._socket != null) {
             try {
                 this._socket.close();
@@ -138,10 +141,6 @@ public class Client extends GameBase {
             catch(IOException ioe) {
                 ioe.printStackTrace();
             }
-            finally {
-            }
-            this._socket = null;
         }
-        this._playerName = null;
     }
 }

@@ -5,9 +5,10 @@ import java.io.*;
 import java.util.ArrayList;
 import java.lang.*;
 import main.LoveLetter;
+import interfaces.IDisposable;
 
 
-public class StateManager {
+public class StateManager implements IDisposable {
     private Server _server;
     private ArrayList<ClientThread> _candidates;
     private ClientThread[] _clientPlayers;
@@ -152,6 +153,24 @@ public class StateManager {
     public synchronized void printAllRegisteredPlayerName() {   // 4debug
         for (int i = 0; i < this._clientPlayers.length; i++) {
             System.out.println(this._clientPlayers[i].clientName());
+        }
+    }
+
+    public void dispose() throws IOException {
+        synchronized(this) {
+            if(this._candidates != null && this._candidates.size() != 0) {
+                for (ClientThread ct : this._candidates) {
+                    ct.dispose();
+                }
+            }
+
+            if(this._clientPlayers != null) {
+                for (int i = 0; i < this._clientPlayers.length; i++) {
+                    if(this._clientPlayers[i] != null) {
+                        this._clientPlayers[i].dispose();
+                    }
+                }
+            }
         }
     }
 }

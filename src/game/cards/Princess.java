@@ -1,4 +1,4 @@
-import java.util.*;
+package game.card;
 
 public class Princess extends Card {
 public Princess() {

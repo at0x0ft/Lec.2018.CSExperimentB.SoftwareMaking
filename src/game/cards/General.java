@@ -1,4 +1,4 @@
-import java.util.*;
+package game.card;
 
 public class General extends Card {
     public General() {

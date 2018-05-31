@@ -1,3 +1,5 @@
+package game.card;
+
 import java.util.*;
 
 public class Card {

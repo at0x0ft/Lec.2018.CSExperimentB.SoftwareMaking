@@ -1,10 +1,10 @@
-package server;
+package main;
 
 import java.io.*;
-import java.net.*;
-import interfaces.IConnectable;
+import interfaces.IDisposable;
 
-abstract class GameBase implements IConnectable {   // remark
-    abstract boolean establishConnection() throws IOException;
-    abstract void startGame() throws IOException;
+public abstract class GameBase implements IDisposable {
+    public abstract boolean establishConnection() throws IOException;
+    public abstract void startGame() throws IOException;
+    public abstract void dispose() throws IOException;
 }

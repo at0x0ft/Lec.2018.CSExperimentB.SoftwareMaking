@@ -1,4 +1,7 @@
+package game;
+
 import java.util.*;
+import game.card.*;
 
 public class Game {
     private Player[] _players;   //カードの参加者リスト

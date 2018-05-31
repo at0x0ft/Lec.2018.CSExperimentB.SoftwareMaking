@@ -41,7 +41,7 @@ public class LoveLetter {
         }
     }
 
-    private static void start(String playerName) {
+    private static void start(String playerName) throws IOException {
         System.out.println("Would you create new gameroom or find other game rooms?");
 
         GameBase gameBase = null;
@@ -71,9 +71,9 @@ public class LoveLetter {
             ioe.printStackTrace();
         }
         finally {
-            // if(gameBase != null) {
-            //     gameBase.dispose();
-            // }
+            if(gameBase != null) {
+                gameBase.dispose();
+            }
         }
     }
 

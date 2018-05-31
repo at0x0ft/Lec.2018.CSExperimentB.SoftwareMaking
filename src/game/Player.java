@@ -1,3 +1,7 @@
+package game;
+
+import game.card.Card;
+
 public class Player {
     private String _ipAddress; //IPアドレス
     private String _name; //プレイヤーの名前

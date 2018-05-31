@@ -3,8 +3,9 @@ package server;
 import java.io.*;
 import java.net.*;
 import main.LoveLetter;
+import interfaces.IDisposable;
 
-public class ClientThread extends Thread {
+public class ClientThread extends Thread implements IDisposable {
     private Server _server;
     private StateManager _stateManager;
 
@@ -75,6 +76,17 @@ public class ClientThread extends Thread {
             }
             default: {
                 return false;
+            }
+        }
+    }
+
+    public void dispose() throws IOException {
+        if(this._socket != null) {
+            try {
+                this._socket.close();
+            }
+            catch(IOException ioe) {
+                ioe.printStackTrace();
             }
         }
     }
