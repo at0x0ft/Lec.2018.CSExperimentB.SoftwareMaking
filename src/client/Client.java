@@ -113,8 +113,11 @@ public class Client extends GameBase {
     public void startGame() {
         Console.writeLn("Now, let's start the game!");
 
-        // create game class from here
-        while(Console.readLn().equals("f"));
+
+        if(!this._exin.readLine().equals("Start Game")) {
+            Console.writeLn("Unknown error occured.");
+            return
+        }
     }
 
     public synchronized void dispose() throws IOException {

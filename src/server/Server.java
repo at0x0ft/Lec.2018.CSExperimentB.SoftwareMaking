@@ -113,7 +113,8 @@ public class Server extends GameBase /*implements IDisposable*/ {
         Console.writeLn("Now, let's start the game!");
 
         // create game class from here
-        _game = new Game(this._masterPlayerName, this._stateManager.getClientPlayerList());
+        this._game = new Game(this._masterPlayerName, this._stateManager.getClientPlayerList());
+        this._game.start();
     }
 
     public synchronized void dispose() throws IOException {

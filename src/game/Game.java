@@ -1,6 +1,7 @@
 package game;
 
 import java.util.*;
+import java.util.ArrayList;
 import java.security.SecureRandom;
 import java.lang.ArrayIndexOutOfBoundsException;
 import main.Console;
@@ -8,63 +9,81 @@ import server.ClientThread;
 import game.cards.*;
 
 public class Game {
-    private Player[] _players;   // 参加者リスト
-    public int playerNumber() {  //現在のゲームの参加者人数を返すメソッド
-        return this._players.length;
+    private Player[] _playersList;   // 参加者リスト Master is last
+    public Player player(int i) {
+        return this._playersList[i];
+    }
+    public int numOfPlayers() {  // ゲームの参加人数を返すメソッド
+        return this._playersList.length;
     }
 
     private Card[] _cardList;   //使うカードのリスト
+    public Card card(int i) {
+        return this._cardList[i];
+    }
+    public int numOfCards() {
+        return this._cardList.length();
+    }
 
-    // private ArrayList<Round> _finishedRoundList;   //ラウンドのリスト
-    // public int currentRound() {
-    //     return this._finishedRoundList.size() + 1;
-    // }
+    public static final int NEEDWINPOINT = 3;
+
+    private ArrayList<Round> _finishedRoundList;   //ラウンドのリスト
+    public int currentRound() {
+        return this._finishedRoundList.size() + 1;
+    }
 
     private boolean _finished;    //ゲームが終了したか否か
     private boolean finished() {
         return this._finished;
     }
+    public void hasFinished() {
+        this._finished = true;
+    }
 
-    // private boolean _hasDuchess;    //女公爵が山札に含まれているか否か
-
-    // private boolean _hasPrince;   //王子が山札に含まれているか否か
-
+    private boolean _hasDuchess;    //女公爵が山札に含まれているか否か
+    public boolean hasDuchess() {
+        return this._hasDuchess;
+    }
+    private boolean _hasPrince;   //王子が山札に含まれているか否か
+    public boolean hasPrince() {
+        return this._hasPrince;
+    }
     private boolean _hasKing;   //王が山札に含まれているか否か
+    public boolean hasKing() {
+        return this._hasKing;
+    }
 
-    // 簡略化されたコンストラクタ (5人以上の時にKingをcardListに加える)
     public Game(String masterName, ClientThread[] clientPlayers) {
-        this._players = new Player[clientPlayers.length + 1];
-        this._hasKing = this._players.length >= 5;
-        this._cardList =  Card.generateCardList(false, false, this._hasKing);
+        // specialized aria start
+        this._hasDuchess = false;
+        this._hasPrince = false;
+        // specialized aria ended
 
-        // create Player Classes
+        this._players = new Player[clientPlayers.length + 1];
+        this._playerOrder = new int[this._players.length];
+        this._hasKing = this._players.length >= 5;
+        this._cardList =  Card.generateCardList(this);
+        this._cardOrder = new int[this._cardList.length];
+
         try {
             int i = 0;
             for (i = 0; i < this._players.length - 1; i++) {
-                this._players[i] = new ClientPlayer(clientPlayers[i]);
+                this._players[i] = new ClientPlayer(clientPlayers[i], i);
             }
-            this._players[i] = new MasterPlayer(masterName);
+            this._players[i] = new MasterPlayer(masterName, i);
         }
         catch(ArrayIndexOutOfBoundsException aioobe) {
             Console.writeLn("PlayerList access error occured in Player generation step.");
         }
 
-        // this._finishedRoundList = new LinkedList<Round>();
+        this._finishedRoundList = new ArrayList<Round>();
         this._finished = false;
-
-        int[] test = null;
-        test = generateRandomNumOrder(test, 5);   // 4debug
-        for (int i = 0; i < test.length; i++) {
-            System.err.println("Random Num Generation test : " + test[i]);
-        }   // 4debug
     }
 
     // shuffle操作の定義. (0 ~ range - 1までの値のランダムな番号の並びをint型配列として返す.)
-    public static int[] generateRandomNumOrder(int[] result, int range) {
-        if(result == null || result.length != range) {
-            result = new int[range];
-        }
-
+    public static int[] generateRandomNumOrder(int range) {
+        int[] result = new int[range];
+        
         for(int i = 0; i < range; i++) {
             result[i] = i;
         }
@@ -81,13 +100,33 @@ public class Game {
     }
 
     //ゲームを開始し終了したラウンドクラスを返す
-    // private Round startGame() {
-    //     // 
-    //     return null;
-    // }
+    private void start() {
+        // Start the game.
+        
+        do {
+            Round round = new Round(this);
+            this._finished = round.start();
+            this._finishedRoundList.add(round);
+        } while(!finished);
+    }
 
     //ゲーム終了時にゲームログファイルを出力する (オプション)
     // private boolean viewLogFile() {
     //     return false;
     // }
+
+    // sending Console Message for all players
+    public void sendMessage4All(String message) {
+        Console.writeLn(message);
+        for (int i = 0; i < numOfPlayers() - 1; i++) {
+            this._playersList[i].sendMessage(message);
+        }
+        return;
+    }
+
+    public void sendMessage4AllClients(String message) {
+        for (int i = 0; i < numOfPlayers() - 1; i++) {
+            this._playersList[i].sendMessage(message);
+        }
+    }
 }

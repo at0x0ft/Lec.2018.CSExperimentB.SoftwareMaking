@@ -17,10 +17,19 @@ public class ClientThread extends Thread implements IDisposable {
         return this._clientName;
     }
 
+    private int _ctidx;
+    public int ctidx() {
+        return this._ctidx;
+    }
+    public void ctidx(int idx) {
+        this._ctidx = idx;
+    }
+
     public ClientThread(Server server, StateManager stateManager, Socket socket) {
         this._server = server;
         this._stateManager = stateManager;
         this._socket = socket;
+        this._ctidx = -1;
     }
 
     @Override
@@ -46,10 +55,15 @@ public class ClientThread extends Thread implements IDisposable {
             }
 
             while(!this._stateManager.playing()) {
-                this._stateManager.waitThread();
+                this._stateManager.waitThread(ctidx());
             }
 
             // start game!
+            while(!this._stateManager.finished()) {
+                receiveMessage();
+                this._stateManager.waitThread(ctidx());
+            }
+
         }
         catch(IOException ioe) {
             ioe.printStackTrace();
@@ -77,6 +91,10 @@ public class ClientThread extends Thread implements IDisposable {
                 return false;
             }
         }
+    }
+
+    public void sendMessage(String message) {
+        this._exout.println(message);
     }
 
     public synchronized void dispose() throws IOException {

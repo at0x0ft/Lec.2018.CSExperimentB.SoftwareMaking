@@ -1,8 +1,9 @@
 package game.cards;
 
 import java.util.*;
-import main.Console;
 import java.lang.ArrayIndexOutOfBoundsException;
+import main.Console;
+import java.game.Game;
 
 public class Card {
     // Num of cards definition
@@ -19,9 +20,9 @@ public class Card {
         return soldierNum + clownNum + knightNum + monkNum + magicianNum + generalNum + ministerNum + princessNum;
     }
 
-    public static Card[] generateCardList(boolean hasDuchess, boolean hasPrince, boolean hasKing) {
+    public static Card[] generateCardList(Game game) {
         int arrayLen = sumOfNormalCards();
-        if(hasKing) {
+        if(game.hasKing()) {
             arrayLen++;
         }
 
@@ -29,40 +30,40 @@ public class Card {
         try {
             int i = 0;
             for(int j = 0; j < soldierNum; j++) {
-                ret[i] = new Soldier();
+                ret[i] = new Soldier(i);
                 i++;
             }
             for(int j = 0; j < clownNum; j++) {
-                ret[i] = new Clown();
+                ret[i] = new Clown(i);
                 i++;
             }
             for(int j = 0; j < knightNum; j++) {
-                ret[i] = new Knight();
+                ret[i] = new Knight(i);
                 i++;
             }
             for(int j = 0; j < monkNum; j++) {
-                ret[i] = new Monk();
+                ret[i] = new Monk(i);
                 i++;
             }
             for(int j = 0; j < magicianNum; j++) {
-                ret[i] = new Magician();
+                ret[i] = new Magician(i);
                 i++;
             }
             for(int j = 0; j < generalNum; j++) {
-                ret[i] = new General();
+                ret[i] = new General(i);
                 i++;
             }
             for(int j = 0; j < ministerNum; j++) {
-                ret[i] = new Minister();
+                ret[i] = new Minister(i);
                 i++;
             }
             for(int j = 0; j < princessNum; j++) {
-                ret[i] = new Princess();
+                ret[i] = new Princess(i);
                 i++;
             }
-            if(hasKing && i < ret.length - 1) {
+            if(game.hasKing() && i < ret.length - 1) {
                 for(int j = 0; j < kingNum; j++) {
-                    ret[i] = new King();
+                    ret[i] = new King(i);
                     i++;
                 }
             }
@@ -79,6 +80,9 @@ public class Card {
     public String name() {
         return this._name;
     }
+    public boolean is(String name) {
+        return this._name.equals(name);
+    }
 
     private int _strength; //カードの強さ
     public int strength(){
@@ -86,13 +90,27 @@ public class Card {
     }
 
     private String _effectText; //カード効果の説明文（余裕があれば実装）
-    public String effectText(){
+    public String effectText() {
         return this._effectText;
     }
 
-    public Card(String name, int strength, String effectText){
+    private int _id;
+    public int id() {
+        return this._id;
+    }
+
+    public String shortInfo() { // ex: 1:soldier
+        return Integer.toString(this._strength) + ":" this._name;
+    }
+
+    public String fullInfo() {  // ex: 1:soldier (hogefuga)
+        return shortInfo() + " (" + this._effectText + ")";
+    }
+
+    public Card(String name, int strength, String effectText, int id) {
         this._name = name;
         this._strength = strength;
         this._effectText = effectText;
+        this._id = id;
     }
 }
