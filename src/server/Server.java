@@ -11,6 +11,15 @@ import game.Game;
 public class Server extends GameBase /*implements IDisposable*/ {
 
     // fields and the constructor Part
+    public static String getLocalHostName() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        }
+        catch (UnknownHostException uhe) {
+            Console.writeLn("Unknown Host Exception Occured.");
+        }
+        return "Unknown Local Host";
+    }
 
     public static final int MINPORTNUM = 1024;
     public static final int MAXPORTNUM = 30000;
@@ -74,6 +83,7 @@ public class Server extends GameBase /*implements IDisposable*/ {
 
     private boolean startInvitation() throws IOException {
         try {
+            Console.writeLn("Your server info : HOSTNAME : " + Server.getLocalHostName() + ", PORT : " + port());
             Console.writeLn("Waiting for other player(s)...");
             while(true) {   // critical section...
                 while(this._stateManager.inviting() && this._stateManager.isFullCandidates()) {
