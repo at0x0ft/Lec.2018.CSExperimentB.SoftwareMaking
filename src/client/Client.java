@@ -18,7 +18,7 @@ public class Client extends GameBase {
         return this._playerName;
     }
 
-    private static final String HOSTNAME = "localhost";
+    private static final String HOSTNAME = "10.24.92.187";
 
     public Client(String playerName) {
         this._playerName = playerName;
@@ -37,10 +37,19 @@ public class Client extends GameBase {
     }
 
     private boolean connect() throws IOException {
+        // String hostname = null;
         while(true) {
             try {
-                this._socket = new Socket(InetAddress.getByName(HOSTNAME), portNumInput()); // Making the socket.
+                this._socket = new Socket(InetAddress.getByName(hostnameInput()), portNumInput()); // Making the socket.
                 break;
+            }
+            catch(UnknownHostException uhe) {
+                if(retryConfirmYN().equals("n")) {
+                    return false;
+                }
+                else {
+                    continue;
+                }
             }
             catch (ConnectException ce) {
                 if(retryConfirmYN().equals("n")) {
@@ -90,6 +99,11 @@ public class Client extends GameBase {
             "Cannot find any server...",
             "Would you retry? Enter y/n. : "
             );
+    }
+
+    public String hostnameInput() {
+        Console.write("Please input server's HOSTNAME : ");
+        return Console.readLn();
     }
 
     public int portNumInput() {
