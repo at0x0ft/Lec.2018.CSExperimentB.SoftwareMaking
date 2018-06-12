@@ -1,7 +1,8 @@
 package main;
 
 import java.io.*;
-import java.util.Scanner;
+import java.util.*;
+import game.Player;
 
 public class Console {
     private static Scanner _in;
@@ -149,9 +150,9 @@ public class Console {
         out.println(msg);
     }
 
-    public static void sendMsgAll(PrintWriter[] out, String msg) {
-        for(int i = 0; i < out.length; i++) {
-            out[i].println(msg);
+    public static void sendMsgAll(List<Player> playerList, String msg) {
+        for(int i = 0; i < playerList.size(); i++) {
+            playerList.get(i).out().println(msg);
         }
     }
 

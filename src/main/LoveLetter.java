@@ -16,11 +16,11 @@ public class LoveLetter {
 
         Console.clearScreen(0);
 
-        Console.writeLn("[game] Welcome to LoveLetter Game!");
-        Console.write("[game] Please enter your player name : ");
+        Console.writeLn("[LoveLetter] Welcome to LoveLetter Game!");
+        Console.write("[LoveLetter] Enter your player name : ");
 
         String playerName = Console.readLn();
-        Console.writeLn("[game] Hi, " + playerName + "!");
+        Console.writeLn("[LoveLetter] Hi, " + playerName + "!");
 
         try {
             start(playerName);
@@ -32,7 +32,7 @@ public class LoveLetter {
             if(Console.isScNull()) {
                 Console.dispose();
             }
-            Console.writeLn("[game] See you.");
+            Console.writeLn("[LoveLetter] See you.");
         }
 
         Console.clearScreen(750);
@@ -50,7 +50,7 @@ public class LoveLetter {
                     //JabberServer serv = new JabberServer(playerName);
 
                     int playerNum;
-                    playerNum = Console.readNum(1, 6, "[game] How many players?", "[game] Input 2 ~ 6 : ");
+                    playerNum = Console.readNum(1, 6, "[LoveLetter] How many players?", "[LoveLetter] Input 2 ~ 6 : ");
 
                     try {
                         Runtime rt = Runtime.getRuntime();
@@ -68,7 +68,7 @@ public class LoveLetter {
                     //gameBase = new Client(playerName);
                     Client clie = new Client(playerName);
                     String host = "localhost";
-                    System.out.println("Input host IP: ");
+                    Console.write("[LoveLetter] Input host IP : ");
                     host = Console.readLn();
                     clie.client(host);
                     break;
@@ -103,8 +103,8 @@ public class LoveLetter {
         return Console.readAorB(
             "c",
             "f",
-            "[game] Would you create new gameroom or find other game rooms?",
-            "[game] Enter c (create new gameroom) / f (find other game rooms) : "
+            "[LoveLetter] Create new gameroom or find other game rooms?",
+            "[LoveLetter] Enter c (create) / f (find) : "
             );
     }
 }
