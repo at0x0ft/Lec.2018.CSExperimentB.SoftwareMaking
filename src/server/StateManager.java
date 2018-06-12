@@ -12,9 +12,12 @@ public class StateManager implements IDisposable {
     private Server _server;
     private ArrayList<ClientThread> _candidates;
     private ClientThread[] _clientPlayers;
-
     public synchronized ClientThread[] getClientPlayerList() {    // remark
         return this._clientPlayers;
+    }
+    private boolean[] _activeFlags;
+    public synchronized boolean activeFlag(int i) {
+        return this._activeFlags[i];
     }
 
     public static final int MINPLAYERNUM = 2;
@@ -117,22 +120,19 @@ public class StateManager implements IDisposable {
     }
 
     private void registerClient(ClientThread clientThread) {
+        clientThread.ctidx(this._registeredPlayerNum);
         this._clientPlayers[this._registeredPlayerNum++] = clientThread;
         this._candidates.remove(clientThread);
     }
-    
-    private boolean _pauseThread;
+
     private int _waitingThreadNum;
     public int waitingThreadNum() {
         return this._waitingThreadNum;
     }
-    public synchronized void waitThread() {
-        if(this._pauseThread == false) {
-            this._pauseThread = true;
-        }
-
+    public synchronized void waitThread(int key) {
+        this._activeFlags[key] = false;
         this._waitingThreadNum++;
-        while(this._pauseThread) {
+        while(this._activeFlags[key]) {
             try {
                 wait();
             }
@@ -143,8 +143,15 @@ public class StateManager implements IDisposable {
         this._waitingThreadNum--;
     }
 
+    public synchronized void restartWaitingThread(int key) {
+        this._activeFlags[key] = true;
+        notifyAll();
+    }
+
     public synchronized void restartAllWaitingThreads() {
-        this._pauseThread = false;
+        for(int i = 0 ; i < this._activeFlags.length; i++) {
+            this._activeFlagslength[i] = true;
+        }
         notifyAll();
     }
 
