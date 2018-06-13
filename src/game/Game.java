@@ -81,12 +81,32 @@ public class Game {
         Console.sendMsgAll(this._playerList, "[game] Cards : " + plist);
 /*** ↑ for debug ↑ ***/
 
-/*
-        while(!this._finished) {
-            Round round = new Round();
+
+//        while(!this._finished) {
+            Round round = new Round(this._playerList, this._cardList, this._hasDuchess, this._hasPrince, this._hasKing);
             round.start();
+//        }
+
+/*** ↓ for debug ↓ **/
+        buf.setLength(0);
+        for(int i = 0; i < this._playerList.size(); i++) {
+            buf.append(this._playerList.get(i).name());
+            if(i != (this._playerList.size() - 1)) buf.append(", ");
         }
-*/
+        plist = buf.toString();
+
+        Console.sendMsgAll(this._playerList, "[game] Players : " + plist);
+
+        buf.setLength(0);
+        for(int i = 0; i < this._cardList.size(); i++) {
+            buf.append(this._cardList.get(i).name());
+            if(i != (this._cardList.size() - 1)) buf.append(", ");
+        }
+        plist = buf.toString();
+
+        Console.sendMsgAll(this._playerList, "[game] Cards : " + plist);
+/*** ↑ for debug ↑ ***/
+
     }
 
     //ゲームを開始し終了したラウンドクラスを返す

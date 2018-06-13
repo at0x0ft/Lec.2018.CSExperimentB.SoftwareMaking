@@ -39,6 +39,21 @@ public class Player {
         return this._points;
     }
 
+    //プレイヤーが生き残っているかを返すメソッド
+    public boolean isAlive() {
+        return this._isAlive;
+    }
+
+    //プレイヤーを生きかえらせるメソッド
+    public void revive() {
+        this._isAlive = true;
+    }
+
+    //プレイヤーを殺すメソッド
+    public void dead() {
+        this._isAlive = false;
+    }
+
     //勝点をwinPoint点だけ増やすメソッド
     public void incrementPoints(int winPoint) {
       this._points += winPoint;
@@ -60,19 +75,19 @@ public class Player {
     }
 
     //手札を返すメソッド
-    public Card hand() {
+    public Card getHand() {
         return _hand;
     }
 
     //手札をセットするメソッド
-    public void hand(Card card) {
+    public void setHand(Card card) {
         this._hand = card;
     }
 
     //手札のカードインスタンスをcardに変更し、元持っていたカードを戻り値として返すメソッド
     public Card exchangeHand(Card card) {
         Card discard = this._hand;
-        hand(card);
+        setHand(card);
         return discard;
     }
 
