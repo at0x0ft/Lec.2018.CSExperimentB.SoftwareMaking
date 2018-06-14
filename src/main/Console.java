@@ -127,14 +127,16 @@ public class Console {
         }
     }
 
-    public static int readNum(int min, int max, String iniMessage, String inputMessage) {
+    public static int readNum(String min, String max, String iniMessage, String inputMessage) {
         int check = 0;
+        int minNum = Integer.parseInt(min);
+        int maxNum = Integer.parseInt(max);
         writeLn(iniMessage);
         while (true) {
             write(inputMessage);
             try {
                 check = Integer.parseInt(read());
-                if(check >= min && check <= max) {
+                if(check >= minNum && check <= maxNum) {
                     return check;
                 }
             }
@@ -143,6 +145,18 @@ public class Console {
                 continue;
             }
             System.out.println(errMsgNum);
+        }
+    }
+
+    public static String readString(String iniMessage, String inputMessage) {
+        String check = null;
+
+        writeLn(iniMessage);
+        while(true) {
+            write(inputMessage);
+
+            check = read();
+            return check;
         }
     }
 
@@ -166,6 +180,26 @@ public class Console {
         }
     }
 
+    public static void sendMsgExceptIndex(List<Player> playerList, int n, String msg) {
+        for(int i = 0; i < playerList.size(); i++) {
+            if(i != n) playerList.get(i).out().println(msg);
+        }
+    }
+
+    public static void sendMsgExceptName(List<Player> playerList, String name, String msg) {
+        for(int i = 0; i < playerList.size(); i++) {
+            if(!playerList.get(i).name().equals(name)) playerList.get(i).out().println(msg);
+        }
+    }
+
+    // 名前からプレイヤーのインデックスを検索するメソッド
+    public static int searchPlayer(String name, List<Player> plist) {
+        for(int i = 0; i < plist.size(); i++) {
+            if(plist.get(i).name().equals(name)) return i;
+        }
+        return -1; //見つからなかった場合
+    }
+
     public static boolean readCommand(BufferedReader in, PrintWriter out, String msg) {
         String[] splitMsg = msg.split(" ");
                     switch(splitMsg[0]) {
@@ -175,6 +209,24 @@ public class Console {
                             switch(splitMsg[1]) {
                                 case "readAorB":
                                     out.println(readAorB(splitMsg[2], splitMsg[3], readSplitLn(splitMsg, 4, splitMsg.length), splitMsg[4] + Console.yellow + " " + "Enter " + splitMsg[2] + " / " + splitMsg[3] + " : " + Console.reset));
+                                    break;
+
+                                case "readNum":
+                                    out.println(readNum(splitMsg[2], splitMsg[3], readSplitLn(splitMsg, 4, splitMsg.length), splitMsg[4] + Console.yellow + " " + "Input " + splitMsg[2] + " ~ " + splitMsg[3] + " : " + Console.reset));
+                                    break;
+
+                                case "readName":
+                                    out.println(readString(readSplitLn(splitMsg, 2, splitMsg.length), splitMsg[2] + Console.yellow + " " + "Input a player name : " + Console.reset));
+                                    break;
+
+                                case "readString":
+                                    out.println(readString(readSplitLn(splitMsg, 2, splitMsg.length), splitMsg[2] + Console.yellow + " " + "Input your select : " + Console.reset));
+                                    break;
+
+                                default:
+                                    Console.write(Console.magenta + "Unknown message : " + Console.reset);
+                                    Console.writeLn(msg);
+                                    break;
                             }
                             break;
                         default:

@@ -3,6 +3,7 @@ package game;
 import java.io.*;
 import java.util.*;
 import main.Console;
+import game.Game;
 import game.cards.*;
 
 public class Round {
@@ -13,8 +14,6 @@ public class Round {
 
     private List<Card> _deck;    // 山札
 
-    private List<Card> _discard; // 捨て札
-
     private boolean _hasDuchess; // 女公爵が山札に含まれているか否か
 
     private boolean _hasPrince;  // 王子が山札に含まれているか否か
@@ -24,30 +23,31 @@ public class Round {
     public Round(List<Player> playerList, List<Card> deck, boolean hasDuchess, boolean hasPrince, boolean hasKing) {
         this._playerList = playerList;
         this._alivePlayer = playerList.size();
-        this._deck = deck;
-        this._discard = new ArrayList<Card>();
+        this._deck = new ArrayList<Card>(deck);
         this._hasDuchess = hasDuchess;
         this._hasPrince = hasPrince;
         this._hasKing = hasKing;
     }
 
     // LoveLetterのゲームの1ラウンドを開始するメソッド.
-    public void start() throws IOException {
+    public void start(int roundNum) throws IOException {
         shufflePlayer();
         shuffleCard();
 
+        Console.sendMsgAll(this._playerList, Console.red + "[game]" + Console.cyan + " Round " + roundNum + Console.reset);
+        wait(3000);
         Console.sendMsgAll(this._playerList, Console.red + "[round]" + Console.cyan + " Player order : " + Console.green + alivePlayer() + Console.reset);
 
 /*** ↓ for debug ↓ **/
-        StringBuilder buf = new StringBuilder();
-        buf.setLength(0);
-        for(int i = 0; i < this._deck.size(); i++) {
-            buf.append(this._deck.get(i).name());
-            if(i != (this._deck.size() - 1)) buf.append(Console.cyan + ", " + Console.blue);
-        }
-        String plist = buf.toString();
-
-        Console.sendMsgAll(this._playerList, Console.red + "[round]" + Console.cyan + " Cards : " + Console.blue + plist + Console.reset);
+//        StringBuilder buf = new StringBuilder();
+//        buf.setLength(0);
+//        for(int i = 0; i < this._deck.size(); i++) {
+//            buf.append(this._deck.get(i).name());
+//            if(i != (this._deck.size() - 1)) buf.append(Console.cyan + ", " + Console.blue);
+//        }
+//        String clist = buf.toString();
+//
+//        Console.sendMsgAll(this._playerList, Console.red + "[round]" + Console.cyan + " Cards : " + Console.blue + clist + Console.reset);
 /*** ↑ for debug ↑ ***/
 
         wait(3000);
@@ -65,9 +65,9 @@ public class Round {
                 }
             }
         }
-
-        //カードをもとに戻す
-        this._deck = this._discard;
+        wait(1000);
+        List<Player> plist = new ArrayList<Player>(this._playerList); //プレイヤーリストをコピー //まあなくてもいい
+        Console.sendMsgAll(this._playerList, Game.rank(plist));
     }
 
     // 一人のプレイヤーがカードを引き、その効果を発揮させるメソッド
@@ -78,58 +78,18 @@ public class Round {
 
         Card drawCard = this._deck.remove(0);
         wait(1000);
-        Console.sendMsg(turnPlayer.out(), Console.red + "[round]" + Console.cyan + "You drew a card." + Console.reset);
-        explainCard(turnPlayer, drawCard);
+        Console.sendMsg(turnPlayer.out(), Console.red + "[round]" + Console.cyan + " You drew a card." + Console.reset);
+        Card.explainCard(turnPlayer, drawCard);
 
-        boolean deathFlag = true;
-        wait(3000);
-        deathFlag = drawCard.drawMethod(turnPlayer);
+        wait(500);
+        int afterFlag = beforeEffect(turnPlayer, drawCard);
 
-        if(deathFlag) {
-            wait(2000);
+        wait(500);
+        if(afterFlag == 0) {
             Card invokeCard = selectCard(turnPlayer, drawCard);
-            invokeCard.throwMethod(turnPlayer);
-            throwCard(invokeCard);
+            endTurn(turnPlayer, invokeCard);
         }
     }
-
-/*
-            case "King":
-                lose(turnPlayer);
-                throwCard(drawCard);
-                break;
-*/
-/*
-        else if(checkDuchessMinister(drawCard)) {
-            if(turnPlayer.getHand().getStrength() >= 5) {
-                if(drawCard == "Minister") {
-                    lose(turnPlayer);
-                    throwCard(drawCard);
-                    return;
-                }
-                else if(drawCard == "Duchess") {
-                    turnAround(turnPlayer);
-                    throwCard(drawCard);
-                    return;
-                }
-
-                Card invokeCard = selectCard(turnPlayer, drawCard);
-                throwCard(invokeCard);
-
-                if(checkPrincessPrince(invokeCard)) {
-                    lose(turnPlayer);
-                    return;
-                }
-                else if(checkMonk(invokeCard)) {
-                    turnPlayer.setProtection();
-                    turnAround(turnPlayer);
-                    return;
-                }
-
-                execute(turnPlayer, invokeCard);
-                return;
-            }
-*/
 
     // プレイヤーをシャッフルするメソッド
     private void shufflePlayer() {
@@ -141,33 +101,16 @@ public class Round {
         Collections.shuffle(this._deck);
     }
 
-    // 名前からプレイヤーのインデックスを検索するメソッド
-    private int searchPlayer(String name) {
-        for(int i = 0; i < this._playerList.size(); i++) {
-            if(this._playerList.get(i).name().equals(name)) return i;
-        }
-        return -1; //見つからなかった場合
-    }
-
-    // 生き残っているプレイヤーの一覧を文字列で返すメソッド
-    private String alivePlayer() {
+    // カードの名前と強さ一覧を文字列で返すメソッド
+    private String allCards(List<Card> cardList) {
         StringBuilder buf = new StringBuilder();
-        for(int i = 0; i < this._playerList.size(); i++) {
-            if(this._playerList.get(i).isAlive()) {
-                buf.append(this._playerList.get(i).name());
-            }
-            if(i != (this._playerList.size() - 1)) {
-                buf.append(", ");
+        for(int i = 0; i < cardList.size(); i++) {
+            buf.append(Console.cyan + "(" + Console.blue + cardList.get(i).name() + Console.cyan + ", " + Console.reset + cardList.get(i).strength() + Console.cyan + ")" + Console.reset);
+            if(i != (cardList.size() - 1)) {
+                buf.append(Console.cyan + ", " + Console.reset);
             }
         }
         return buf.toString();
-    }
-
-    // プレイヤーに引いたカードの説明をするメソッド
-    private void explainCard(Player player, Card card) {
-        Console.sendMsg(player.out(), "Name    : " + Console.blue + card.name() + Console.reset);
-        Console.sendMsg(player.out(), "Strength: " + card.strength());
-        Console.sendMsg(player.out(), "Effect  : " + card.effectText());
     }
 
     //各プレイヤーに初期カードを配って通知するメソッド
@@ -176,36 +119,48 @@ public class Round {
             Player player = this._playerList.get(i);
             player.setHand(this._deck.remove(0));
             Console.sendMsg(player.out(), Console.red + "[round]" + Console.cyan + "Your initial card : " + Console.reset);
-            explainCard(player, player.getHand());
+            Card.explainCard(player, player.getHand());
         }
     }
 
-    // cardを捨て札の一番上に追加するメソッド
-    private void throwCard(Card card) {
-        this._discard.add(card);
+    // cardをプライヤーの捨て札の一番上に追加するメソッド
+    private void throwCard(Player player, Card card) {
+        player.addDiscard(card);
+        wait(500);
+        Console.sendMsgAll(this._playerList, Console.red + "[round] " + Console.green + player.name() + Console.cyan + "'s discard list : " + allCards(player.getDiscard()) + Console.reset);
     }
 
     // 負けプレイヤーの敗戦処理を行うメソッド
     private void lose(Player loser) {
-        throwCard(loser.getHand());
+        wait(2000);
+        Console.sendMsgAll(this._playerList, Console.red + "[round] " + Console.green + loser.name() + Console.cyan + " has " + Console.magenta + "dropped out" + Console.cyan + "." + Console.reset);
+        Console.sendMsgExceptName(this._playerList, loser.name(), Console.red + "[round] " + Console.green + loser.name() + Console.cyan + "'s hand card is " + Console.blue + loser.getHand().name() + Console.cyan + " ." + Console.reset);
+        throwCard(loser, loser.getHand());
         loser.setHand(null);
         loser.clearProtected();
         this._alivePlayer--;
         loser.dead();
-        Console.sendMsgAll(this._playerList, Console.red + "[round] " + Console.green + loser.name() + Console.cyan + " has dropped out." + Console.reset);
         Console.sendMsgAll(this._playerList, Console.red + "[round]" + Console.cyan + " Alive : " + Console.green + alivePlayer() + Console.reset);
+    }
+
+    // プレイヤーのターンを終了するメソッド
+    private void endTurn(Player turnPlayer, Card invokeCard) throws IOException {
+        Console.sendMsgExceptName(this._playerList, turnPlayer.name(), Console.red + "[round] " + Console.green + turnPlayer.name() + Console.cyan + " throws " + Console.blue + invokeCard.name() + Console.cyan + " card." + Console.reset);
+        throwCard(turnPlayer, invokeCard);
+        int afterFlag;
+        afterEffect(turnPlayer, invokeCard);
     }
 
     // 山札から引いたカードを手札に残すか否かを確認するメソッド
     private Card selectCard(Player turnPlayer, Card drawCard) throws IOException {
         try {
-            Console.sendMsg(turnPlayer.out(), "/console readAorB 0 1 " + Console.red + "[round] " + Console.cyan + "Select discard. 0: " + Console.blue + drawCard.name() + Console.cyan + ", 1: " + Console.blue + turnPlayer.getHand().name() + Console.reset);
+            Console.sendMsg(turnPlayer.out(), "/console readAorB 0 1 " + Console.red + "[round] " + Console.cyan + "Select discard. 0: " + Console.blue + turnPlayer.getHand().name() + Console.cyan + ", 1: " + Console.blue + drawCard.name() + Console.reset);
             String ans = Console.acceptMsg(turnPlayer.in()); /***あとで例外処理***/
             if(ans.equals("0")) {
-                return drawCard;
+                return turnPlayer.exchangeHand(drawCard);
             }
             else if(ans.equals("1")) {
-                return turnPlayer.exchangeHand(drawCard);
+                return drawCard;
             }
             else {
                 Console.sendMsgAll(this._playerList, Console.magenta + "error" + Console.reset);
@@ -214,6 +169,64 @@ public class Round {
         } catch(IOException e) {
             return drawCard;
         }
+    }
+
+    // 生き残っているプレイヤーの一覧を文字列で返すメソッド
+    public String alivePlayer() {
+        StringBuilder buf = new StringBuilder();
+        for(int i = 0; i < this._playerList.size(); i++) {
+            if(this._playerList.get(i).isAlive()) {
+                buf.append(Console.green + this._playerList.get(i).name() + Console.reset);
+                if(i != (this._playerList.size() - 1)) {
+                    buf.append(Console.cyan + ", " + Console.reset);
+                }
+            }
+        }
+        return buf.toString();
+    }
+
+    //自分以外のプレイヤーを選ぶメソッド
+    private Player selectPlayer(Player player, List<Player> plist) throws IOException {
+        String ans;
+        Player target = null;
+
+        Console.sendMsg(player.out(), Console.red + "[card] " + alivePlayer() + Console.reset);
+        Console.sendMsg(player.out(), "/console readName " + Console.red + "[card] " + Console.cyan + "Who do you select?" + Console.reset);
+        while(true) {
+            ans = Console.acceptMsg(player.in());
+            int n = Console.searchPlayer(ans, plist);
+            if(n != -1) {
+                target = plist.get(n);
+                if(!target.name().equals(player.name())) {
+                    break;
+                }
+            }
+            Console.sendMsg(player.out(), "/console readName " + Console.red + "[card] " + Console.magenta + "Con't select the player." + Console.reset);
+        }
+        return target;
+    }
+
+    //自分以外の生きているプレイヤーを選ぶメソッド
+    private Player selectAlivePlayer(Player player, List<Player> plist) throws IOException {
+        String ans;
+        Player target = null;
+
+        Console.sendMsg(player.out(), Console.red + "[card] " + alivePlayer() + Console.reset);
+        Console.sendMsg(player.out(), "/console readName " + Console.red + "[card] " + Console.cyan + "Who do you select?" + Console.reset);
+        while(true) {
+            ans = Console.acceptMsg(player.in());
+            int n = Console.searchPlayer(ans, plist);
+            if(n != -1) {
+                target = plist.get(n);
+                if(!target.name().equals(player.name())) {
+                    if(target.isAlive()) {
+                        break;
+                    }
+                }
+            }
+            Console.sendMsg(player.out(), "/console readName " + Console.red + "[card] " + Console.magenta + "Con't select the player." + Console.reset);
+        }
+        return target;
     }
 
     // ゲームが終了したか否かを判定するメソッド
@@ -258,15 +271,154 @@ public class Round {
         }
 
         // 勝者のカードが姫だった場合
-        if(winPlayer.getHand().name().equals("Prince")) {
+        if(winPlayer.getHand().name().equals("Princess")) {
             winPoint++;
         }
 
+        Console.sendMsgAll(this._playerList, Console.red + "[round]" + Console.cyan + " Round finish !" + Console.reset);
+        wait(2000);
         Console.sendMsgAll(this._playerList, Console.red + "[round]" + Console.cyan + " Winner : " + Console.green + winPlayer.name() + Console.cyan + " !" + Console.reset);
         wait(500);
         Console.sendMsgAll(this._playerList, Console.red + "[round] " + Console.green + winPlayer.name() + Console.cyan + " get " + winPoint + " point." + Console.reset);
         winPlayer.incrementPoints(winPoint);
-        wait(3000);
+    }
+
+    // 引いた時に発動する効果 (引いたカードと手持ちのカードがある)
+    public int beforeEffect(Player turnPlayer, Card card) throws IOException {
+        int ans = 0;
+        Player target = null;
+        switch(card.name()) {
+            case "Duchess":
+                if(turnPlayer.getHand().strength() >= 5) {
+                    endTurn(turnPlayer, card);
+                    ans = 1;
+                }
+                break;
+
+            case "King":
+                throwCard(turnPlayer, card);
+                lose(turnPlayer);
+                ans = 1;
+                break;
+
+            case "Minister":
+                if(turnPlayer.getHand().strength() >= 5) {
+                    throwCard(turnPlayer, card);
+                    lose(turnPlayer);
+                    ans = 1;
+                }
+                break;
+
+            default:
+                break;
+        }
+        return ans;
+    }
+
+    // 捨てた時に発動する効果 (手持ちのカードだけ)
+    public void afterEffect(Player turnPlayer, Card card) throws IOException {
+        Player target = null;
+        switch(card.name()) {
+            case "Clown":
+                target = selectAlivePlayer(turnPlayer, this._playerList);
+                Console.sendMsgExceptName(this._playerList, turnPlayer.name(), Console.red + "[card] " + Console.green + turnPlayer.name() + Console.cyan + " selected " + Console.green + target.name() + Console.cyan + "." + Console.reset);
+
+                if(!target.isProtected()) {
+                    Console.sendMsg(turnPlayer.out(), Console.red + "[card] " + Console.green + target.name() + Console.cyan + " has " + Console.blue + target.getHand().name() + Console.cyan + " card." + Console.reset);
+                } else {
+                    Console.sendMsgAll(this._playerList, Console.red + "[card] " + Console.green + turnPlayer.name() + Console.cyan + " missed." + Console.reset);
+                }
+                break;
+
+            case "General":
+                target = selectAlivePlayer(turnPlayer, this._playerList);
+                Console.sendMsgExceptName(this._playerList, turnPlayer.name(), Console.red + "[card] " + Console.green + turnPlayer.name() + Console.cyan + " selected " + Console.green + target.name() + Console.cyan + "." + Console.reset);
+
+                if(!target.isProtected()) {
+                    turnPlayer.setHand(target.exchangeHand(turnPlayer.getHand()));
+                    Console.sendMsg(turnPlayer.out(), Console.red + "[card] " + Console.cyan + "Your hand card is " + Console.blue + turnPlayer.getHand().name() + Console.cyan + " card." + Console.reset);
+                    Card.explainCard(turnPlayer, turnPlayer.getHand());
+                    Console.sendMsg(target.out(), Console.red + "[card] " + Console.cyan + "Your hand card is " + Console.blue + target.getHand().name() + Console.cyan + " card." + Console.reset);
+                    Card.explainCard(target, target.getHand());
+                } else {
+                    Console.sendMsgAll(this._playerList, Console.red + "[card] " + Console.green + turnPlayer.name() + Console.cyan + " missed." + Console.reset);
+                }
+                break;
+
+            case "Knight":
+                target = selectAlivePlayer(turnPlayer, this._playerList);
+                Console.sendMsgExceptName(this._playerList, turnPlayer.name(), Console.red + "[card] " + Console.green + turnPlayer.name() + Console.cyan + " selected " + Console.green + target.name() + Console.cyan + "." + Console.reset);
+
+                if(!target.isProtected()) {
+                    Console.sendMsg(turnPlayer.out(), Console.red + "[card] " + Console.green + target.name() + Console.cyan + " has " + Console.blue + target.getHand().name() + Console.cyan + " card." + Console.reset);
+                    Console.sendMsg(target.out(), Console.red + "[card] " + Console.green + turnPlayer.name() + Console.cyan + " has " + Console.blue + turnPlayer.getHand().name() + Console.cyan + " card." + Console.reset);
+
+                    if(turnPlayer.getHand().strength() > target.getHand().strength()) {
+                        lose(target);
+                    } else if(target.getHand().strength() > turnPlayer.getHand().strength()) {
+                        lose(turnPlayer);
+                    }
+                } else {
+                    Console.sendMsgAll(this._playerList, Console.red + "[card] " + Console.green + turnPlayer.name() + Console.cyan + " missed." + Console.reset);
+                }
+                break;
+
+            case "Magician":
+                target = selectAlivePlayer(turnPlayer, this._playerList);
+                Console.sendMsgExceptName(this._playerList, turnPlayer.name(), Console.red + "[card] " + Console.green + turnPlayer.name() + Console.cyan + " selected " + Console.green + target.name() + Console.cyan + "." + Console.reset);
+
+                if(!target.isProtected()) {
+                    Console.sendMsgExceptName(this._playerList, target.name(), Console.red + "[round] " + Console.green + target.name() + Console.cyan + " throws " + Console.blue + target.getHand().name() + Console.cyan + " card." + Console.reset);
+                    throwCard(target, target.getHand());
+
+                    Card drawCard = this._deck.remove(0);
+                    wait(1000);
+                    Console.sendMsg(target.out(), Console.red + "[round]" + Console.cyan + " You drew a card." + Console.reset);
+                    Card.explainCard(target, drawCard);
+
+                    wait(500);
+                    int afterFlag = beforeEffect(target, drawCard);
+
+                    wait(500);
+                    if(afterFlag == 0) {
+                        target.setHand(drawCard);
+                    }
+                } else {
+                    Console.sendMsgAll(this._playerList, Console.red + "[card] " + Console.green + turnPlayer.name() + Console.cyan + " missed." + Console.reset);
+                }
+                break;
+
+            case "Soldier":
+                target = selectAlivePlayer(turnPlayer, this._playerList);
+                Console.sendMsgExceptName(this._playerList, turnPlayer.name(), Console.red + "[card] " + Console.green + turnPlayer.name() + Console.cyan + " selected " + Console.green + target.name() + Console.cyan + "." + Console.reset);
+
+                String ans;
+                Console.sendMsg(turnPlayer.out(), "/console readString " + Console.red + "[card] " + Console.cyan + "What card do you select?" + Console.reset);
+                ans = Console.acceptMsg(turnPlayer.in());
+
+                if(!target.isProtected()) {
+                    if(ans.equals(target.getHand().name())) {
+                        lose(target);
+                    } else {
+                        Console.sendMsgAll(this._playerList, Console.red + "[card] " + Console.green + turnPlayer.name() + Console.cyan + " missed." + Console.reset);
+                    }
+                } else {
+                    Console.sendMsgAll(this._playerList, Console.red + "[card] " + Console.green + turnPlayer.name() + Console.cyan + " missed." + Console.reset);
+                }
+                break;
+
+            case "Monk":
+                turnPlayer.setProtected();
+                break;
+
+            case "Princess":
+            case "Prince":
+                lose(turnPlayer);
+                break;
+
+            default:
+                break;
+        }
     }
 
     public void wait(int time) {

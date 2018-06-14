@@ -53,11 +53,14 @@ public class Server {
             out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket[i].getOutputStream())), true); // Set the buffer for sending.
             playerName = in.readLine();
 
-            Console.sendMsg(owner.out(), "/console readAorB y n [server] " + playerName + " joined, accept?");
+            Console.sendMsg(out, Console.red + "[server] " + Console.cyan + "Connected to " + Console.green + owner.name() + Console.cyan + "'s server" + Console.reset);
+            Console.sendMsg(out, Console.red + "[server] " + Console.cyan + "Now " + Console.green + owner.name() + Console.cyan + " is judging whether to accept you." + Console.reset);
+            Console.sendMsg(owner.out(), "/console readAorB y n " + Console.red + "[server] " + Console.green + playerName + Console.cyan + " connected, accept?" + Console.reset);
             ans = Console.acceptMsg(owner.in());
             if(ans.equals("y")) {
+                Console.sendMsgAll(playerList, Console.red + "[server] " + Console.green + playerName + Console.cyan + " joined." + Console.reset);
                 playerList.add(new Player(playerName, 0, false, null, in, out));
-                Console.sendMsg(playerList.get(i).out(), Console.red + "[server]" + Console.cyan + " Connected to " + Console.green + owner.name() + Console.cyan + "'s server" + Console.reset);
+                Console.sendMsg(playerList.get(i).out(), Console.red + "[server]" + Console.cyan + " Joined to " + Console.green + owner.name() + Console.cyan + "'s server" + Console.reset);
             } else if(ans.equals("n")) {
                 Console.sendMsg(out, Console.red + "[server]" + Console.magenta + " You have been rejected." + Console.reset);
                 Console.sendMsg(out, "/fin");
@@ -67,20 +70,26 @@ public class Server {
             }
         }
 
-        /*** ゲームの設定 ***/
-        Game game = new Game(playerList);
-        game.startGame();
+        /*** ゲームの開始 ***/
+        Console.sendMsgAll(playerList, Console.red + "[server]" + Console.cyan + " Participation reception is over. Let's start game !" + Console.reset);
+
+        while(true) {
+            Game game = new Game(playerList);
+            game.startGame();
+
+            Console.sendMsgExceptName(playerList, owner.name(), Console.red + "[server] " + Console.cyan + "Now, " + Console.green + owner.name() + Console.cyan + " deciding whether to play one more game." + Console.reset);
+            Console.sendMsg(owner.out(), "/console readAorB y n " + Console.red + "[server] "+ Console.cyan + "Play one more game?" + Console.reset);
+            ans = Console.acceptMsg(owner.in());
+            if(ans.equals("n")) {
+                Console.sendMsgExceptName(playerList, owner.name(), Console.red + "[server] " + Console.green + owner.name() + Console.cyan + " decided to finish the server." + Console.reset);
+                break;
+            }
+            Console.sendMsgAll(playerList, Console.red + "[server] " + Console.cyan + "Let's play one more game !" + Console.reset);
+        }
 
         /*** 終了通知 ***/
         Console.sendMsgAll(playerList, "/fin");
         for(Socket sc : socket) sc.close();
         s.close();
-
-
-
-                //Round round = new Round(playerQueue, false, false, false);
-
-                //round.start();
-
     }
 }

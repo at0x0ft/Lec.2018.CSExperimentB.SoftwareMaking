@@ -1,7 +1,7 @@
 package game;
 
 import java.io.*;
-import server.ClientThread;
+import java.util.*;
 import game.cards.Card;
 
 public class Player {
@@ -15,6 +15,8 @@ public class Player {
 
     private Card _hand; //手札
 
+    private List<Card> _discard; // 捨て札
+
     private BufferedReader _in;
 
     private PrintWriter _out;
@@ -25,6 +27,7 @@ public class Player {
         this._isAlive = true;
         this._isProtected = protection;
         this._hand = hand;
+        this._discard = new ArrayList<Card>();
         this._in = in;
         this._out = out;
     }
@@ -35,8 +38,13 @@ public class Player {
     }
 
     //プレイヤーのポイントを返すメソッド
-    public int points() {
+    public int getPoint() {
         return this._points;
+    }
+
+    //プレイヤーのポイントをセットするメソッド
+    public void setPoint(int n) {
+        this._points = n;
     }
 
     //プレイヤーが生き残っているかを返すメソッド
@@ -89,6 +97,21 @@ public class Player {
         Card discard = this._hand;
         setHand(card);
         return discard;
+    }
+
+    //プレイヤーの捨て札を返すメソッド
+    public List<Card> getDiscard() {
+        return this._discard;
+    }
+
+    //プレイヤーの捨て札をリセットするメソッド
+    public void resetDiscard() {
+        this._discard.clear();
+    }
+
+    //プレイヤーの捨て札を追加するメソッド
+    public void addDiscard(Card card) {
+        this._discard.add(card);
     }
 
     public BufferedReader in() {

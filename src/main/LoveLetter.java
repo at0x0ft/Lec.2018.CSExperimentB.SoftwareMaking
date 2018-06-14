@@ -4,8 +4,6 @@ import java.io.*;
 import java.net.*;
 import java.lang.*;
 import main.Console;
-//import client.Client;
-//import server.Server;
 import main.Server;
 import main.Client;
 
@@ -32,7 +30,7 @@ public class LoveLetter {
             if(Console.isScNull()) {
                 Console.dispose();
             }
-            Console.writeLn(Console.red + "[LoveLetter]" + Console.cyan + " See you." + Console.reset);
+            Console.writeLn(Console.red + "[LoveLetter] " + Console.cyan + "Server was finished. See you." + Console.reset);
         }
 
         Console.clearScreen(750);
@@ -42,17 +40,13 @@ public class LoveLetter {
     private static void start(String playerName) throws IOException {
         InetAddress ia = InetAddress.getLocalHost();
         String ip = ia.getHostAddress();       //IPアドレス
-        GameBase gameBase = null;
         try {
             switch(createOrFind()) {
                 case "c": {
-                    //gameBase = new Server(playerName);
-                    //JabberServer serv = new JabberServer(playerName);
-
                     int playerNum;
                     playerNum = Console.readNum(
-                        1,
-                        6,
+                        "1",
+                        "6",
                         Console.red + "[LoveLetter]" + Console.cyan + " How many players?" + Console.reset,
                         Console.red + "[LoveLetter]" + Console.yellow + " Input 2 ~ 6 : " + Console.reset
                         );
@@ -60,6 +54,7 @@ public class LoveLetter {
                     try {
                         Runtime rt = Runtime.getRuntime();
                         rt.exec("java main.Server " + playerNum);
+                        wait(1000);
                         Client clie = new Client(playerName);
                         clie.client(ip);
                     } catch (IOException ex) {
@@ -70,7 +65,6 @@ public class LoveLetter {
                     break;
                 }
                 case "f": {
-                    //gameBase = new Client(playerName);
                     Client clie = new Client(playerName);
                     String host = "localhost";
                     Console.write(Console.red + "[LoveLetter]" + Console.yellow + " Input host IP : " + Console.reset);
@@ -82,25 +76,12 @@ public class LoveLetter {
                     return;
                 }
             }
-/*
-            if(!gameBase.establishConnection()) {
-                return;
-            }
-*/
             Console.clearScreen(1000);
-
-            // start game
-            //gameBase.startGame();
         }
         catch(IOException ioe) {
             ioe.printStackTrace();
         }
         finally {
-/*
-            if(gameBase != null) {
-                gameBase.dispose();
-            }
-*/
         }
     }
 
@@ -111,5 +92,12 @@ public class LoveLetter {
             Console.red + "[LoveLetter]" + Console.cyan + " Create new gameroom or find other game rooms?" + Console.reset,
             Console.red + "[LoveLetter]" + Console.yellow + " Enter c (create) / f (find) : " + Console.reset
             );
+    }
+
+    public static void wait(int time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+        }
     }
 }
