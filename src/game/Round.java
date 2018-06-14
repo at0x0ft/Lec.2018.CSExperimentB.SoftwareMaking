@@ -73,21 +73,23 @@ public class Round {
     // 一人のプレイヤーがカードを引き、その効果を発揮させるメソッド
     private void turn(int n) throws IOException {
         Player turnPlayer = this._playerList.get(n);
-        Console.sendMsgAll(this._playerList, Console.red + "[round] " + Console.green + turnPlayer.name() + Console.cyan + "'s turn." + Console.reset);
-        turnPlayer.clearProtected();
+        if(turnPlayer.isAlive()) {
+            Console.sendMsgAll(this._playerList, Console.red + "[round] " + Console.green + turnPlayer.name() + Console.cyan + "'s turn." + Console.reset);
+            turnPlayer.clearProtected();
 
-        Card drawCard = this._deck.remove(0);
-        wait(1000);
-        Console.sendMsg(turnPlayer.out(), Console.red + "[round]" + Console.cyan + " You drew a card." + Console.reset);
-        Card.explainCard(turnPlayer, drawCard);
+            Card drawCard = this._deck.remove(0);
+            wait(1000);
+            Console.sendMsg(turnPlayer.out(), Console.red + "[round]" + Console.cyan + " You drew a card." + Console.reset);
+            Card.explainCard(turnPlayer, drawCard);
 
-        wait(500);
-        int afterFlag = beforeEffect(turnPlayer, drawCard);
+            wait(500);
+            int afterFlag = beforeEffect(turnPlayer, drawCard);
 
-        wait(500);
-        if(afterFlag == 0) {
-            Card invokeCard = selectCard(turnPlayer, drawCard);
-            endTurn(turnPlayer, invokeCard);
+            wait(500);
+            if(afterFlag == 0) {
+                Card invokeCard = selectCard(turnPlayer, drawCard);
+                endTurn(turnPlayer, invokeCard);
+            }
         }
     }
 
