@@ -1,10 +1,12 @@
 package game;
 
+import java.io.IOException;
 import server.ClientThread;
 import game.Game;
 import game.cards.Card;
+import interfaces.ISendable;
 
-public class Player {
+public class Player implements ISendable {
     private String _name;
     public String name() {  //プレイヤーの名前を返すメソッド
         return this._name;
@@ -20,6 +22,10 @@ public class Player {
         return this._points;
     }
 
+    public String shortInfo() {
+        return name() + "(" + points() + ")";
+    }
+
     //勝点をwinPoint点だけ増やすメソッド
     public void incrementPoints(int winPoint) {
       this._points += winPoint;
@@ -29,10 +35,10 @@ public class Player {
     public boolean isProtected() {
         return this._isProtected;
     }
-    public void setProtected() {
+    public void setProtection() {
         this._isProtected = true;
     }
-    public void clearProtected() {
+    public void clearProtection() {
         this._isProtected = false;
     }
 
@@ -48,9 +54,6 @@ public class Player {
     public int handCardIdx() {
         return this._handCardIdx;
     }
-    public void handCardIdx(int hcidx) {
-        this._hcidx;
-    }
 
     private boolean _isAlive;
     public boolean isAlive() {
@@ -65,7 +68,7 @@ public class Player {
 
     public Player(String name, int id) {
         this._name = name;
-        this._name = id;
+        this._id = id;
         this._points = 0;
         this._isProtected = false;
         this._hand = null;
@@ -73,11 +76,11 @@ public class Player {
         this._isAlive = true;
     }
 
-    public String info() { // ex : hogeo(1/3)
-        return this._name + "(" + Integer.toString(this._points) + "/" + Integer.toString(Game.NEEDWINPOINT) + ")";
+    public String sendMessage(int msgType, String message) throws IOException { // for override method
+        return null;
     }
 
-    public Card selectCard(Card drawCard, int drawCardIdx) {
+    public Card selectCard(Card drawCard) throws IOException { // 4 override
         return null;
     }
 
@@ -88,33 +91,55 @@ public class Player {
         return ret;
     }
 
-    public Player selectPlayer(ArrayList<Player> list) {
+    public Player selectPlayer(Player[] list) throws IOException { // 4 override
         // select player
         return null;
     }
 
-    protected String extractPlayerInfo(ArrayList<Player> list) {
-        String message = "choose one player : ";
-        for (Player p : list) {
-            message += p.shortInfo() + ", ";
-        }
-        return message;
-    }
-
-    protected Player checkPlayer(String name, ArrayList<Player> list) {
-        for (Player p : list) {
-            if(p.name().equals(name)) {
-                return p;
-            }
-        }
-    }
-
-    public Card predictCard() {
+    public String predictCard(Game game) throws IOException {    // 4 override
         // select card
         return null;
     }
-    
-    public void see(Card card) {
+
+    public boolean see(Player Object) throws IOException { // 4 override
         // see the card.
+        return false;
+    }
+
+    protected String extractPlayerInfo(Player[] list) {
+        String message = "Player list : ";
+        for (int i = 0; i < list.length; i++) {
+            message += Integer.toString(i + 1) + ":" + list[i].name();
+            if(list[i].isProtected()) {
+                message += "(Protected)";
+            }
+            if(i != list.length - 1) {
+                message += ", ";
+            }
+        }
+        message += "//" + Integer.toString(list.length);
+        return message;
+    }
+
+    protected String extractCardTypeInfo(Game game) {
+        String message = "Card list : ";
+        message += "//";
+        if(game.hasKing()) {
+            message += "0:King, ";
+        }
+        message += "1:Soldier, 2:Clown, 3:Knight, 4:Monk, 5:Magician, 6:General, ";
+        if(game.hasDuchess()) {
+            message += "7:Duchess, ";
+        }
+        else {
+            message += "7:Minister, ";
+        }
+        if(game.hasPrince()) {
+            message += "8:Prince";
+        }
+        else {
+            message += "8:Princess";
+        }
+        return message;
     }
 }

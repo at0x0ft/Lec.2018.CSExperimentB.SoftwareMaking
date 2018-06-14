@@ -3,6 +3,7 @@ package server;
 import java.io.*;
 import java.net.*;
 import interfaces.IDisposable;
+import game.ClientPlayer;
 
 public class ClientThread extends Thread implements IDisposable {
     private Server _server;
@@ -25,11 +26,17 @@ public class ClientThread extends Thread implements IDisposable {
         this._ctidx = idx;
     }
 
+    private ClientPlayer _clientPlayer;
+    private void setClientPlayer(ClientPlayer cp) {
+        this._clientPlayer = cp;
+    }
+
     public ClientThread(Server server, StateManager stateManager, Socket socket) {
         this._server = server;
         this._stateManager = stateManager;
         this._socket = socket;
         this._ctidx = -1;
+        this._clientPlayer = null;
     }
 
     @Override
@@ -60,7 +67,7 @@ public class ClientThread extends Thread implements IDisposable {
 
             // start game!
             while(!this._stateManager.finished()) {
-                receiveMessage();
+                sendMessage(this._stateManager.popMsgType(), this._stateManager.popMessage());
                 this._stateManager.waitThread(ctidx());
             }
 
@@ -69,13 +76,13 @@ public class ClientThread extends Thread implements IDisposable {
             ioe.printStackTrace();
         }
         finally {
-            try {
-                if(this._socket != null) {
+            if(this._socket != null) {
+                try {
                     this._socket.close();
                 }
-            }
-            catch(IOException ioe) {
-                ioe.printStackTrace();
+                catch(IOException ioe) {
+                    ioe.printStackTrace();
+                }
             }
         }
     }
@@ -93,8 +100,24 @@ public class ClientThread extends Thread implements IDisposable {
         }
     }
 
-    public void sendMessage(String message) {
+    public void sendMessage(int msgType, String message) throws IOException {
+        // sendMessage
         this._exout.println(message);
+
+        // receive message
+        switch(msgType) {
+            case 7:
+            case 13:
+            case 17:
+            case 21:
+            case 22:
+            case 23:
+            case 24: {
+                this._stateManager.registerMessage(msgType, this._exin.readLine());
+                this._stateManager.restartWaitingThread(ctidx());
+                break;
+            }
+        }
     }
 
     public synchronized void dispose() throws IOException {

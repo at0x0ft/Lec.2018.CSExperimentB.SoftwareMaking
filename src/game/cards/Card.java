@@ -3,7 +3,7 @@ package game.cards;
 import java.util.*;
 import java.lang.ArrayIndexOutOfBoundsException;
 import main.Console;
-import java.game.Game;
+import game.Game;
 
 public class Card {
     // Num of cards definition
@@ -100,7 +100,7 @@ public class Card {
     }
 
     public String shortInfo() { // ex: 1:soldier
-        return Integer.toString(this._strength) + ":" this._name;
+        return Integer.toString(this._strength) + ":" + this._name;
     }
 
     public String fullInfo() {  // ex: 1:soldier (hogefuga)
@@ -112,5 +112,60 @@ public class Card {
         this._strength = strength;
         this._effectText = effectText;
         this._id = id;
+    }
+
+    public static String detectCardType(int strength, Game game) {
+        String cardName = null;
+        switch(strength) {
+            case 0: {
+                if(game.hasKing()) {
+                    cardName = "King";
+                }
+                break;
+            }
+            case 1: {
+                cardName = "Soldier";
+                break;
+            }
+            case 2: {
+                cardName = "Clown";
+                break;
+            }
+            case 3: {
+                cardName = "Knight";
+                break;
+            }
+            case 4: {
+                cardName = "Monk";
+                break;
+            }
+            case 5: {
+                cardName = "Magician";
+                break;
+            }
+            case 6: {
+                cardName = "General";
+                break;
+            }
+            case 7: {
+                if(game.hasDuchess()) {
+                    cardName = "Duchess";
+                }
+                else {
+                    cardName = "Minister";
+                }
+                break;
+            }
+            case 8: {
+                if(game.hasPrince()) {
+                    cardName = "Prince";
+                }
+                else {
+                    cardName = "Princess";
+                }
+                break;
+            }
+        }
+        return cardName;
     }
 }

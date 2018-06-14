@@ -6,6 +6,7 @@ import server.Server;
 import main.Console;
 import main.GameBase;
 import interfaces.IDisposable;
+import model.Message;
 
 public class Client extends GameBase {
     private BufferedReader _exin;
@@ -124,11 +125,32 @@ public class Client extends GameBase {
         );
     }
 
-    public void startGame() {
+    public void startGame() throws IOException {
         Console.writeLn("Now, let's start the game!");
 
         // create game class from here
-        while(Console.readLn().equals("f"));
+        while(Console.readLn().equals("f"))
+
+        while(true) {
+            // receive and deserialize the message
+            boolean continueFlg = receiveMessage(this._exin.readLine());
+            
+            if(!continueFlg) {
+                break;
+            }
+        }
+    }
+
+    private boolean receiveMessage(String inMsg) throws IOException {
+        String response = Message.deserialize(inMsg);
+        if(response != null) {
+            this._exout.println(response);
+        }
+        if(response == "GAME END" /* Game set flag here */) {
+            return false;
+        }
+
+        return true;
     }
 
     public synchronized void dispose() throws IOException {

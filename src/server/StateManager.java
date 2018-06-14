@@ -12,18 +12,18 @@ public class StateManager implements IDisposable {
     private Server _server;
     private ArrayList<ClientThread> _candidates;
     private ClientThread[] _clientPlayers;
-    public synchronized ClientThread[] getClientPlayerList() {    // remark
-        return this._clientPlayers;
+    public synchronized ClientThread clientThread(int i) {
+        return this._clientPlayers[i];
     }
     private boolean[] _activeFlags;
     public synchronized boolean activeFlag(int i) {
         return this._activeFlags[i];
     }
 
-    public static final int MINPLAYERNUM = 2;
-    public static final int MAXPLAYERNUM = 6;
-
     private int _playerNum;
+    public int playerNum() {
+        return this._playerNum;
+    }
     private int _registeredPlayerNum;
 
     public synchronized boolean isFullCandidates() {
@@ -39,7 +39,7 @@ public class StateManager implements IDisposable {
     }
 
     private int _state;
-    private void proceedState() {
+    public synchronized void proceedState() {
         this._state++;
     }
     public synchronized boolean inviting() {
@@ -51,15 +51,20 @@ public class StateManager implements IDisposable {
     public synchronized boolean playing() {
         return this._state == 2;
     }
+    public synchronized boolean finished() {
+        return this._state == 3;
+    }
 
     public StateManager(Server server, int playerNum) {
         this._server = server;
         this._candidates = new ArrayList<ClientThread>();
         this._clientPlayers = new ClientThread[playerNum - 1];
+        this._activeFlags = new boolean[playerNum + 1]; // clients + master(serverThread) + this
         this._playerNum = playerNum;
         this._registeredPlayerNum = 0;
         this._state = 0;
-        this._pauseThread = false;
+        this._message = null;
+        this._msgType = -1;
     }
 
     public synchronized void addCandidate(ClientThread clientThread) {
@@ -102,7 +107,7 @@ public class StateManager implements IDisposable {
             }
 
             while(!playing()) {
-                waitThread();
+                waitThread(this._playerNum);
             }
             restartAllWaitingThreads();
         }
@@ -150,7 +155,7 @@ public class StateManager implements IDisposable {
 
     public synchronized void restartAllWaitingThreads() {
         for(int i = 0 ; i < this._activeFlags.length; i++) {
-            this._activeFlagslength[i] = true;
+            this._activeFlags[i] = true;
         }
         notifyAll();
     }
@@ -161,12 +166,28 @@ public class StateManager implements IDisposable {
         }
     }
 
+
+    private String _message;
+    private int _msgType;
+    public synchronized void registerMessage(int msgType, String msg) {
+        this._message = msg;
+        this._msgType = msgType;
+    }
+    public synchronized String popMessage() {
+        String retMsg = this._message;
+        this._message = null;
+        return retMsg;
+    }
+    public synchronized int popMsgType() {
+        int msgType = this._msgType;
+        this._msgType = -1;
+        return msgType;
+    }
+
     public synchronized void dispose() throws IOException {
-        synchronized(this) {
-            if(this._candidates != null && this._candidates.size() != 0) {
-                for (ClientThread ct : this._candidates) {
-                    ct.dispose();
-                }
+        if(this._candidates != null && this._candidates.size() != 0) {
+            for (ClientThread ct : this._candidates) {
+                ct.dispose();
             }
 
             if(this._clientPlayers != null) {

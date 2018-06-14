@@ -8,7 +8,7 @@ import main.GameBase;
 import interfaces.IDisposable;
 import game.Game;
 
-public class Server extends GameBase /*implements IDisposable*/ {
+public class Server extends GameBase {
 
     // fields and the constructor Part
     public static String getLocalHostName() {
@@ -74,10 +74,10 @@ public class Server extends GameBase /*implements IDisposable*/ {
 
     private int playerNumInput() {
         return Console.readNum(
-            this._stateManager.MINPLAYERNUM,
-            this._stateManager.MAXPLAYERNUM,
+            Game.MINPLAYERNUM,
+            Game.MAXPLAYERNUM,
             "How many players do you want to play with (including you) ?",
-            "Please input number from 2 to " + this._stateManager.MAXPLAYERNUM + ". : "
+            "Please input number from 2 to " + Game.MAXPLAYERNUM + ". : "
         );
     }
 
@@ -87,7 +87,7 @@ public class Server extends GameBase /*implements IDisposable*/ {
             Console.writeLn("Waiting for other player(s)...");
             while(true) {   // critical section...
                 while(this._stateManager.inviting() && this._stateManager.isFullCandidates()) {
-                    this._stateManager.waitThread();
+                    this._stateManager.waitThread(this._stateManager.playerNum() - 1);
                 }
                 if(!this._stateManager.inviting()) {
                         break;
@@ -98,7 +98,7 @@ public class Server extends GameBase /*implements IDisposable*/ {
 
             // waiting for removing all clients which failed to get 
             while(!this._stateManager.playing()) {
-                this._stateManager.waitThread();
+                this._stateManager.waitThread(this._stateManager.playerNum() - 1);
             }
         }
         catch(IOException ioe) {
@@ -119,11 +119,15 @@ public class Server extends GameBase /*implements IDisposable*/ {
 
     private Game _game;
 
-    public void startGame() {
+    public void startGame() throws IOException {
         Console.writeLn("Now, let's start the game!");
 
         // create game class from here
-        _game = new Game(this._masterPlayerName, this._stateManager.getClientPlayerList());
+        this._game = new Game(this._masterPlayerName, this._stateManager);
+
+        this._game.start();
+
+        this._stateManager.proceedState();
     }
 
     public synchronized void dispose() throws IOException {
