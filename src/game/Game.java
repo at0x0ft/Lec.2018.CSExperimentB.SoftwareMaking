@@ -1,5 +1,6 @@
 package game;
 
+import java.io.*;
 import java.util.*;
 import java.security.SecureRandom;
 import java.lang.ArrayIndexOutOfBoundsException;
@@ -46,7 +47,6 @@ public class Game {
         return this._hasKing;
     }
 
-
     /*** コンストラクタ (5人以上の時にKingをcardListに加える) ***/
     public Game(List<Player> playerList) {
         this._playerList = playerList;
@@ -59,30 +59,33 @@ public class Game {
     }
 
     /*** ゲームを開始するメソッド ***/
-    public void startGame() {
+    public void startGame() throws IOException {
 
 /*** ↓ for debug ↓ **/
         StringBuilder buf = new StringBuilder();
         for(int i = 0; i < this._playerList.size(); i++) {
             buf.append(this._playerList.get(i).name());
-            if(i != (this._playerList.size() - 1)) buf.append(", ");
+            if(i != (this._playerList.size() - 1)) buf.append(Console.cyan + ", " + Console.green);
         }
         String plist = buf.toString();
 
-        Console.sendMsgAll(this._playerList, "[game] Players : " + plist);
+        Console.sendMsgAll(this._playerList, Console.red + "[game]" + Console.cyan + " Players : " + Console.green + plist + Console.reset);
 
         buf.setLength(0);
         for(int i = 0; i < this._cardList.size(); i++) {
             buf.append(this._cardList.get(i).name());
-            if(i != (this._cardList.size() - 1)) buf.append(", ");
+            if(i != (this._cardList.size() - 1)) buf.append(Console.cyan + ", " + Console.blue);
         }
         plist = buf.toString();
 
-        Console.sendMsgAll(this._playerList, "[game] Cards : " + plist);
+        Console.sendMsgAll(this._playerList, Console.red + "[game]" + Console.cyan + " Cards : " + Console.blue + plist + Console.reset);
 /*** ↑ for debug ↑ ***/
 
 
 //        while(!this._finished) {
+            wait(2000);
+            Console.sendMsgAll(this._playerList, Console.red + "[game]" + Console.cyan + " Round 1 " + Console.reset);
+            wait(3000);
             Round round = new Round(this._playerList, this._cardList, this._hasDuchess, this._hasPrince, this._hasKing);
             round.start();
 //        }
@@ -91,32 +94,34 @@ public class Game {
         buf.setLength(0);
         for(int i = 0; i < this._playerList.size(); i++) {
             buf.append(this._playerList.get(i).name());
-            if(i != (this._playerList.size() - 1)) buf.append(", ");
+            if(i != (this._playerList.size() - 1)) buf.append(Console.cyan + ", " + Console.green);
         }
         plist = buf.toString();
 
-        Console.sendMsgAll(this._playerList, "[game] Players : " + plist);
+        Console.sendMsgAll(this._playerList, Console.red + "[game]" + Console.cyan + " Players : " + Console.green + plist + Console.reset);
 
         buf.setLength(0);
         for(int i = 0; i < this._cardList.size(); i++) {
             buf.append(this._cardList.get(i).name());
-            if(i != (this._cardList.size() - 1)) buf.append(", ");
+            if(i != (this._cardList.size() - 1)) buf.append(Console.cyan + ", " + Console.blue);
         }
         plist = buf.toString();
 
-        Console.sendMsgAll(this._playerList, "[game] Cards : " + plist);
+        Console.sendMsgAll(this._playerList, Console.red + "[game]" + Console.cyan + " Cards : " + Console.blue + plist + Console.reset);
 /*** ↑ for debug ↑ ***/
 
     }
-
-    //ゲームを開始し終了したラウンドクラスを返す
-    // private Round startGame() {
-    //     //
-    //     return null;
-    // }
 
     //ゲーム終了時にゲームログファイルを出力する (オプション)
     // private boolean viewLogFile() {
     //     return false;
     // }
+
+    public void wait(int time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+        }
+    }
+
 }

@@ -3,6 +3,8 @@ package game.cards;
 import java.io.*;
 import java.util.*;
 import main.Console;
+import game.Player;
+import game.Round;
 import java.lang.ArrayIndexOutOfBoundsException;
 
 public class Card {
@@ -77,23 +79,36 @@ public class Card {
     }
 
     private String _name; //カードの名前
-    public String name() {
-        return this._name;
-    }
 
     private int _strength; //カードの強さ
-    public int strength(){
-        return this._strength;
-    }
 
-    private String _effectText; //カード効果の説明文（余裕があれば実装）
-    public String effectText(){
-        return this._effectText;
-    }
+    private String _effectText; //カード効果の説明文
 
     public Card(String name, int strength, String effectText){
         this._name = name;
         this._strength = strength;
         this._effectText = effectText;
+    }
+
+    //カードの名前を返すメソッド
+    public String name() {
+        return this._name;
+    }
+
+    //カードの強さを返すメソッド
+    public int strength(){
+        return this._strength;
+    }
+
+    //カード効果の説明文を返すメソッド
+    public String effectText(){
+        return this._effectText;
+    }
+
+    public boolean drawMethod(Player player) {
+        return true;
+    }
+
+    public void throwMethod(Player player) {
     }
 }

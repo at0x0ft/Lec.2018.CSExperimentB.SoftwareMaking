@@ -16,11 +16,11 @@ public class LoveLetter {
 
         Console.clearScreen(0);
 
-        Console.writeLn("[LoveLetter] Welcome to LoveLetter Game!");
-        Console.write("[LoveLetter] Enter your player name : ");
+        Console.writeLn(Console.red + "[LoveLetter]" + Console.cyan + " Welcome to LoveLetter Game!" + Console.reset);
+        Console.write(Console.red + "[LoveLetter]" + Console.yellow + " Enter your player name : " + Console.reset);
 
         String playerName = Console.readLn();
-        Console.writeLn("[LoveLetter] Hi, " + playerName + "!");
+        Console.writeLn(Console.red + "[LoveLetter]" + Console.cyan + " Hi, " + Console.green + playerName + Console.cyan + "!" + Console.reset);
 
         try {
             start(playerName);
@@ -32,7 +32,7 @@ public class LoveLetter {
             if(Console.isScNull()) {
                 Console.dispose();
             }
-            Console.writeLn("[LoveLetter] See you.");
+            Console.writeLn(Console.red + "[LoveLetter]" + Console.cyan + " See you." + Console.reset);
         }
 
         Console.clearScreen(750);
@@ -50,7 +50,12 @@ public class LoveLetter {
                     //JabberServer serv = new JabberServer(playerName);
 
                     int playerNum;
-                    playerNum = Console.readNum(1, 6, "[LoveLetter] How many players?", "[LoveLetter] Input 2 ~ 6 : ");
+                    playerNum = Console.readNum(
+                        1,
+                        6,
+                        Console.red + "[LoveLetter]" + Console.cyan + " How many players?" + Console.reset,
+                        Console.red + "[LoveLetter]" + Console.yellow + " Input 2 ~ 6 : " + Console.reset
+                        );
 
                     try {
                         Runtime rt = Runtime.getRuntime();
@@ -58,7 +63,7 @@ public class LoveLetter {
                         Client clie = new Client(playerName);
                         clie.client(ip);
                     } catch (IOException ex) {
-                        System.out.println("debug: error 1");
+                        System.out.println(Console.magenta + "debug: error 1" + Console.reset);
                         ex.printStackTrace();
                     }
 
@@ -68,7 +73,7 @@ public class LoveLetter {
                     //gameBase = new Client(playerName);
                     Client clie = new Client(playerName);
                     String host = "localhost";
-                    Console.write("[LoveLetter] Input host IP : ");
+                    Console.write(Console.red + "[LoveLetter]" + Console.yellow + " Input host IP : " + Console.reset);
                     host = Console.readLn();
                     clie.client(host);
                     break;
@@ -103,8 +108,8 @@ public class LoveLetter {
         return Console.readAorB(
             "c",
             "f",
-            "[LoveLetter] Create new gameroom or find other game rooms?",
-            "[LoveLetter] Enter c (create) / f (find) : "
+            Console.red + "[LoveLetter]" + Console.cyan + " Create new gameroom or find other game rooms?" + Console.reset,
+            Console.red + "[LoveLetter]" + Console.yellow + " Enter c (create) / f (find) : " + Console.reset
             );
     }
 }

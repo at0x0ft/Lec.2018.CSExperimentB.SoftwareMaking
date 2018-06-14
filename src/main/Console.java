@@ -5,10 +5,20 @@ import java.util.*;
 import game.Player;
 
 public class Console {
+    public static final String black   = "\u001b[30m";
+    public static final String red     = "\u001b[31m";
+    public static final String green   = "\u001b[32m";
+    public static final String yellow  = "\u001b[33m";
+    public static final String blue    = "\u001b[34m";
+    public static final String magenta = "\u001b[35m";
+    public static final String cyan    = "\u001b[36m";
+    public static final String white   = "\u001b[37m";
+    public static final String reset   = "\u001b[0m";
+
     private static Scanner _in;
     private static BufferedReader _br;
-    private static final String errMsgChar = "Wrong character! Please enter the correct ones.";
-    private static final String errMsgNum = "Wrong number! Please enter the correct ones.";
+    private static final String errMsgChar = Console.magenta + "Wrong character! Please enter the correct ones." + Console.reset;
+    private static final String errMsgNum = Console.magenta + "Wrong number! Please enter the correct ones." + Console.reset;
 
     public static void initialize() {
         _in = new Scanner(System.in);
@@ -164,11 +174,11 @@ public class Console {
                         case "/console":
                             switch(splitMsg[1]) {
                                 case "readAorB":
-                                    out.println(readAorB(splitMsg[2], splitMsg[3], readSplitLn(splitMsg, 4, splitMsg.length), splitMsg[4] + " " + "Enter " + splitMsg[2] + " / " + splitMsg[3] + " : "));
+                                    out.println(readAorB(splitMsg[2], splitMsg[3], readSplitLn(splitMsg, 4, splitMsg.length), splitMsg[4] + Console.yellow + " " + "Enter " + splitMsg[2] + " / " + splitMsg[3] + " : " + Console.reset));
                             }
                             break;
                         default:
-                            Console.write("Unknown message : ");
+                            Console.write(Console.magenta + "Unknown message : " + Console.reset);
                             Console.writeLn(msg);
                             break;
                     }
