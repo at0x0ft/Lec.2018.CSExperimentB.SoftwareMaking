@@ -18,16 +18,8 @@ public class Card {
     public static final int ministerNum = 1;
     public static final int princessNum = 1;
     public static final int kingNum = 1;
-    public static int sumOfNormalCards() {
-        return soldierNum + clownNum + knightNum + monkNum + magicianNum + generalNum + ministerNum + princessNum;
-    }
 
     public static List<Card> generateCardList(boolean hasDuchess, boolean hasPrince, boolean hasKing) {
-        int arrayLen = sumOfNormalCards();
-        if(hasKing) {
-            arrayLen++;
-        }
-
         List<Card> ret = new ArrayList<Card>();
         try {
             int i = 0;
@@ -63,9 +55,21 @@ public class Card {
                 ret.add(new Princess());
                 i++;
             }
-            if(hasKing && i < ret.size() - 1) {
+            if(hasKing) {
                 for(int j = 0; j < kingNum; j++) {
                     ret.add(new King());
+                    i++;
+                }
+            }
+            if(hasPrince) {
+                for(int j = 0; j < 1; j++) {
+                    ret.add(new Prince());
+                    i++;
+                }
+            }
+            if(hasDuchess) {
+                for(int j = 0; j < 1; j++) {
+                    ret.add(new Duchess());
                     i++;
                 }
             }
@@ -105,10 +109,18 @@ public class Card {
         return this._effectText;
     }
 
-    public boolean drawMethod(Player player) {
-        return true;
+    // プレイヤーに引いたカードの説明をするメソッド
+    public static void explainCard(Player player, Card card) {
+        Console.sendMsg(player.out(), "Name    : " + Console.blue + card.name() + Console.reset);
+        Console.sendMsg(player.out(), "Strength: " + card.strength());
+        Console.sendMsg(player.out(), "Effect  : " + card.effectText());
     }
 
-    public void throwMethod(Player player) {
+    public int drawMethod(Player player, List<Player> plist) throws IOException {
+        return -1;
+    }
+
+    public int throwMethod(Player player, List<Player> plist) throws IOException {
+        return -1;
     }
 }
