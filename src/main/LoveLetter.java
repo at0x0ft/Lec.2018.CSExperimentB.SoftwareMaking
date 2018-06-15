@@ -45,7 +45,7 @@ public class LoveLetter {
                 case "c": {
                     int playerNum;
                     playerNum = Console.readNum(
-                        "1",
+                        "2",
                         "6",
                         Console.red + "[LoveLetter]" + Console.cyan + " How many players?" + Console.reset,
                         Console.red + "[LoveLetter]" + Console.yellow + " Input 2 ~ 6 : " + Console.reset

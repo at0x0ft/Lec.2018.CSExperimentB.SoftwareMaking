@@ -56,12 +56,14 @@ public class Round {
         boolean endFlag = true;
         while(endFlag) {
             for(int i = 0; i < this._playerList.size(); i++) {
-                wait(5000);
-                turn(i);
-                if(finished()) {
-                    winJudge();
-                    endFlag = false;
-                    break;
+                if(this._playerList.get(i).isAlive()) {
+                    wait(4000);
+                    turn(i);
+                    if(finished()) {
+                        winJudge();
+                        endFlag = false;
+                        break;
+                    }
                 }
             }
         }
@@ -120,7 +122,7 @@ public class Round {
         for(int i = 0; i < this._playerList.size(); i++) {
             Player player = this._playerList.get(i);
             player.setHand(this._deck.remove(0));
-            Console.sendMsg(player.out(), Console.red + "[round]" + Console.cyan + "Your initial card : " + Console.reset);
+            Console.sendMsg(player.out(), Console.red + "[round]" + Console.cyan + " Your initial card : " + Console.reset);
             Card.explainCard(player, player.getHand());
         }
     }
@@ -281,7 +283,7 @@ public class Round {
         wait(2000);
         Console.sendMsgAll(this._playerList, Console.red + "[round]" + Console.cyan + " Winner : " + Console.green + winPlayer.name() + Console.cyan + " !" + Console.reset);
         wait(500);
-        Console.sendMsgAll(this._playerList, Console.red + "[round] " + Console.green + winPlayer.name() + Console.cyan + " get " + winPoint + " point." + Console.reset);
+        Console.sendMsgAll(this._playerList, Console.red + "[round] " + Console.green + winPlayer.name() + Console.cyan + " get " + Console.magenta + winPoint + Console.cyan + "point." + Console.reset);
         winPlayer.incrementPoints(winPoint);
     }
 
@@ -371,19 +373,23 @@ public class Round {
 
                 if(!target.isProtected()) {
                     Console.sendMsgExceptName(this._playerList, target.name(), Console.red + "[round] " + Console.green + target.name() + Console.cyan + " throws " + Console.blue + target.getHand().name() + Console.cyan + " card." + Console.reset);
-                    throwCard(target, target.getHand());
+                    if(target.getHand().name().equals("Princess")) {
+                        lose(target);
+                    } else {
+                        throwCard(target, target.getHand());
 
-                    Card drawCard = this._deck.remove(0);
-                    wait(1000);
-                    Console.sendMsg(target.out(), Console.red + "[round]" + Console.cyan + " You drew a card." + Console.reset);
-                    Card.explainCard(target, drawCard);
+                        Card drawCard = this._deck.remove(0);
+                        wait(1000);
+                        Console.sendMsg(target.out(), Console.red + "[round]" + Console.cyan + " You drew a card." + Console.reset);
+                        Card.explainCard(target, drawCard);
 
-                    wait(500);
-                    int afterFlag = beforeEffect(target, drawCard);
+                        wait(500);
+                        int afterFlag = beforeEffect(target, drawCard);
 
-                    wait(500);
-                    if(afterFlag == 0) {
-                        target.setHand(drawCard);
+                        wait(500);
+                        if(afterFlag == 0) {
+                            target.setHand(drawCard);
+                        }
                     }
                 } else {
                     Console.sendMsgAll(this._playerList, Console.red + "[card] " + Console.green + turnPlayer.name() + Console.cyan + " missed." + Console.reset);
