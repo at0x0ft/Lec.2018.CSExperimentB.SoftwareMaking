@@ -119,10 +119,10 @@ public class Round {
             if(this._game.hasKing() && checkKing(c)) {
                 hasKingPlayer = p;
             }
-            incrementPlayerOrderPtr();
-            incrementCardOrderPtr();
             // notify drawcard
             p.sendMessage(4, Message.serialize(4, null, null, p.hand()));
+            incrementPlayerOrderPtr();
+            incrementCardOrderPtr();
         }
 
         if(this._game.hasKing() && hasKingPlayer != null) {
@@ -137,6 +137,7 @@ public class Round {
         /*** 全員に通知 "turnPlayerのターンです" ***/
         sendMessageAll(1);
         sendPlayersActionMessageAll(2, turnPlayer, null);
+        System.err.println("turn notification end debug print");// 4debug
 
         turnPlayer.clearProtection();
 
@@ -144,18 +145,23 @@ public class Round {
         incrementCardOrderPtr();
 
         /*** 引いたプレイヤーに通知 "引いたカードの名前、強さ、説明" ***/
+        System.err.println("turnPlayer : " + turnPlayer.name() + ", sending msg : " + Message.serialize(4, null, null, drawCard));// 4debug
         turnPlayer.sendMessage(4, Message.serialize(4, null, null, drawCard));
+        System.err.println("debug print in Round and end sendMessage & drawCard : " + drawCard.name());// 4debug
 
         if(checkKing(drawCard)) {
+            System.err.println("in King Judge");// 4debug
             // lose with King
             lose(turnPlayer, drawCard);
             sendPlayersActionMessageAll(9, turnPlayer, drawCard); // notify the throw card
             throwCard(drawCard); // throw the draw card
             return;
         }
-        else if(checkDuchess(drawCard) && checkMinister(drawCard)) {
+        else if(checkDuchess(drawCard) || checkMinister(drawCard)) {
+            System.err.println("in Minister & Duchess Judge");// 4debug
             if(turnPlayer.hand().strength() + drawCard.strength() >= 12) {
                 if(checkMinister(drawCard)) {
+                    System.err.println("in Minister Judge");// 4debug
                     // lose with Minister
                     lose(turnPlayer, drawCard);
                     sendPlayersActionMessageAll(9, turnPlayer, drawCard); // notify the throw card
@@ -163,6 +169,7 @@ public class Round {
                     return;
                 }
                 else if(checkDuchess(drawCard)) {
+                    System.err.println("in Duchess Judge");// 4debug
                     sendPlayersActionMessageAll(9, turnPlayer, drawCard); // notify the throw card
                     throwCard(drawCard);
                     return; // turn end
@@ -170,8 +177,9 @@ public class Round {
             }
         }
 
-        Card invokeCard = turnPlayer.selectCard(drawCard);  // atode
-        sendPlayersActionMessageAll(9, turnPlayer, drawCard); // notify the throw card
+        System.err.println("before select card in Round. (debug)");// 4debug
+        Card invokeCard = turnPlayer.selectCard(drawCard);
+        sendPlayersActionMessageAll(9, turnPlayer, invokeCard); // notify the throw card
         throwCard(invokeCard);
 
         // throwCard effect check step.
@@ -185,6 +193,9 @@ public class Round {
             turnPlayer.setProtection();
             // notify the monkProtection
             sendPlayersActionMessageAll(11, turnPlayer, null);
+            return;
+        }
+        else if(checkMinister(invokeCard)) {
             return;
         }
 
@@ -208,64 +219,77 @@ public class Round {
     // invokeCardに書かれた効果 (兵士、道化、騎士、魔術師、将軍の効果のみ) を実行するメソッド
     private void execute(Player turnPlayer, Card invokeCard) throws IOException {
         // select the object player
+        System.err.println("now execute debug print & turnPlayer : " + turnPlayer.name());// 4debug
         Player object = turnPlayer.selectPlayer(pickUpAlivePlayers());
-        sendSelectedPlayerNotification(turnPlayer, object);
-        switch(invokeCard.name()) {
-            case "Soldier": {
-                String predictedCardName = turnPlayer.predictCard(this._game);
-                if(object.hand().is(predictedCardName)) {
-                    lose(object, invokeCard);
-                }
-                break;
-            }
-            case "Clown": {
-                turnPlayer.see(object);
-                break;
-            }
-            case "Knight": {
-                // notify the battle situation
-                sendKnightBattleMsg(turnPlayer, object);
-                if(turnPlayer.hand().strength() > object.hand().strength()) {
-                    lose(object, invokeCard);
-                }
-                else if(turnPlayer.hand().strength() < object.hand().strength()) {
-                    lose(turnPlayer, invokeCard);
-                }
-                break;
-            }
-            case "Magician": {
-                if(numOfTheRestOfTheCards() != 0) {
-                    sendPlayersActionMessageAll(9, object, object.hand()); // notify the throw card
-                    throwCard(object.hand());
-                    if(checkPrincessPrince(object.hand())) {
-                        lose(object, invokeCard);
-                    }
-                    Card drawCard = card(drawCardID());
-                    incrementCardOrderPtr();
-
-                    // notify drawCard
-                    object.sendMessage(4, Message.serialize(4, null, null, drawCard));
-                    if(checkKing(drawCard)) {
-                        // lose with King
-                        lose(object, drawCard);
-                        sendPlayersActionMessageAll(9, object, drawCard); // notify the throw card
-                        throwCard(drawCard); // throw the draw card
+        if(object != turnPlayer && !object.isProtected()) {
+            sendSelectedPlayerNotification(turnPlayer, object);
+            switch(invokeCard.name()) {
+                case "Soldier": {
+                    String predictedCardName = turnPlayer.predictCard(this._game);
+                    if(predictedCardName.equals("Soldier")) {
+                        sendMessageAll(8);
                         return;
                     }
-
-                    object.hand(drawCard);
+                    if(object.hand().is(predictedCardName)) {
+                        lose(object, invokeCard);
+                    }
+                    break;
                 }
-                break;
+                case "Clown": {
+                    turnPlayer.see(object);
+                    break;
+                }
+                case "Knight": {
+                    // notify the battle situation
+                    sendKnightBattleMsg(turnPlayer, object);
+                    if(turnPlayer.hand().strength() > object.hand().strength()) {
+                        lose(object, invokeCard);
+                    }
+                    else if(turnPlayer.hand().strength() < object.hand().strength()) {
+                        lose(turnPlayer, invokeCard);
+                    }
+                    break;
+                }
+                case "Magician": {
+                    if(numOfTheRestOfTheCards() != 0) {
+                        sendPlayersActionMessageAll(9, object, object.hand()); // notify the throw card
+                        throwCard(object.hand());
+                        if(checkPrincessPrince(object.hand())) {
+                            lose(object, invokeCard);
+                        }
+                        Card drawCard = card(drawCardID());
+                        incrementCardOrderPtr();
+    
+                        // notify drawCard
+                        object.sendMessage(4, Message.serialize(4, null, null, drawCard));
+                        if(checkKing(drawCard)) {
+                            // lose with King
+                            lose(object, drawCard);
+                            sendPlayersActionMessageAll(9, object, drawCard); // notify the throw card
+                            throwCard(drawCard); // throw the draw card
+                            return;
+                        }
+    
+                        object.hand(drawCard);
+                    }
+                    break;
+                }
+                case "General": {
+                    // exchange card
+                    Card objectCard = object.hand();
+                    object.hand(turnPlayer.hand());
+                    System.err.println("object.hand() : " + object.hand().name());//4debug
+                    object.sendMessage(19, Message.serialize(19, null, null, object.hand()));
+                    turnPlayer.hand(objectCard);
+                    System.err.println("turnPlayer.hand() : " + turnPlayer.hand().name());//4debug
+                    turnPlayer.sendMessage(19, Message.serialize(19, null, null, turnPlayer.hand()));
+                    break;
+                }
             }
-            case "General": {
-                // exchange card
-                Card objectCard = object.hand();
-                object.hand(turnPlayer.hand());
-                object.sendMessage(19, Message.serialize(20, null, null, object.hand()));
-                turnPlayer.hand(objectCard);
-                turnPlayer.sendMessage(19, Message.serialize(20, null, null, turnPlayer.hand()));
-                break;
-            }
+
+        }
+        else {
+            sendMessageAll(8);
         }
     }
 
@@ -279,7 +303,7 @@ public class Round {
 
         if(numOfAlivePlayers() == 1) {
             // winner player (= next available player)
-            winner = player(turnPlayerID()); // winner
+            winner = aliveList[0]; // winner
         }
         if(numOfAlivePlayers() !=  1) {
             int max = 0;
@@ -296,7 +320,7 @@ public class Round {
             }
             if(maxnum > 1) {    // 勝者の数が複数人なら引き分け
                 // notify draw round
-                sendMessageAll(22);
+                sendMessageAll(21);
                 return false;
             }
         }
@@ -313,10 +337,13 @@ public class Round {
         // log writing (optional)
 
         if(winner.points() >= 3) {
+            System.err.println("Game finished debug print");// 4debug
             sendWinMessageAll(3, winner);
             this._game.endGame();
             // log writing (optional)
         }
+
+        System.err.println("game has finished : " + hasFinished());// 4debug
 
         return true;
     }
@@ -324,6 +351,7 @@ public class Round {
     // send Message for all players
     private void sendMessageAll(int msgType) throws IOException {
         for (int i = 0; i < numOfPlayers(); i++) {
+            System.err.println("send to " + player(i).name());// 4debug
             player(i).sendMessage(msgType, Message.serialize(msgType, this, player(i), null));
         }
     }
@@ -333,38 +361,39 @@ public class Round {
         for (int i = 0; i < numOfPlayers(); i++) {
             switch(msgType) {
                 case 2: {
+                    System.err.println("player : " + p.name());    // 4debug
                     if(i == p.id()) {
-                        player(i).sendMessage(msgType, Message.serialize(2, null, null, null));
+                        player(i).sendMessage(msgType, Message.serialize(msgType, null, null, null));
                     }
                     else {
-                        player(i).sendMessage(msgType, Message.serialize(3, null, p, null));
+                        player(i).sendMessage(msgType, Message.serialize(msgType + 1, null, p, null));
                     }
                     break;
                 }
                 case 5: {
                     if(i == p.id()) {
-                        player(i).sendMessage(msgType, Message.serialize(5, null, null, card));
+                        player(i).sendMessage(msgType, Message.serialize(msgType, null, null, card));
                     }
                     else {
-                        player(i).sendMessage(msgType, Message.serialize(6, null, p, card));
+                        player(i).sendMessage(msgType, Message.serialize(msgType + 1, null, p, card));
                     }
                     break;
                 }
                 case 9: {
                     if(i == p.id()) {
-                        player(i).sendMessage(msgType, Message.serialize(9, null, null, card));
+                        player(i).sendMessage(msgType, Message.serialize(msgType, null, null, card));
                     }
                     else {
-                        player(i).sendMessage(msgType, Message.serialize(10, null, p, card));
+                        player(i).sendMessage(msgType, Message.serialize(msgType + 1, null, p, card));
                     }
                     break;
                 }
                 case 11: {
                     if(i == p.id()) {
-                        player(i).sendMessage(msgType, Message.serialize(11, null, null, null));
+                        player(i).sendMessage(msgType, Message.serialize(msgType, null, null, null));
                     }
                     else {
-                        player(i).sendMessage(msgType, Message.serialize(12, null, p, null));
+                        player(i).sendMessage(msgType, Message.serialize(msgType + 1, null, p, null));
                     }
                     break;
                 }
@@ -398,13 +427,13 @@ public class Round {
             }
         }
         for (int i = 0; i < numOfPlayers(); i++) {
-            player(i).sendMessage(21, msg);
+            player(i).sendMessage(20, msg);
         }
     }
 
     private void sendWinMessageAll(int type, Player winner) throws IOException {
         for (int i = 0; i < numOfPlayers(); i++) {
-            player(i).sendMessage(22 + type, Message.serialize(22 + type, null, winner, null));
+            player(i).sendMessage(21 + type, Message.serialize(21 + type, null, winner, null));
         }
     }
 
@@ -412,7 +441,13 @@ public class Round {
     public Player[] pickUpAlivePlayers() {
         Player[] list = new Player[numOfAlivePlayers()];
         int j = 0;
-        for(int i = this._playerOrderPtr; i < this._playerOrderPtr + numOfPlayers() && j < numOfAlivePlayers(); i++) {
+        // for(int i = this._playerOrderPtr; i < this._playerOrderPtr + numOfPlayers() && j < numOfAlivePlayers(); i++) {
+        //     if(player(this._playerOrder[i % numOfPlayers()]).isAlive()) {
+        //         list[j] = player(this._playerOrder[i % numOfPlayers()]);
+        //         j++;
+        //     }
+        // }
+        for(int i = 0; j < numOfAlivePlayers(); i++) {
             if(player(this._playerOrder[i % numOfPlayers()]).isAlive()) {
                 list[j] = player(this._playerOrder[i % numOfPlayers()]);
                 j++;
@@ -428,7 +463,7 @@ public class Round {
 
     // return discards
     public Card[] pickUpDiscards() {
-        return (Card[])this._discard.toArray();
+        return this._discard.toArray(new Card[numOfDiscards()]);
     }
 
     // cardが王であるかどうかをチェックするメソッド

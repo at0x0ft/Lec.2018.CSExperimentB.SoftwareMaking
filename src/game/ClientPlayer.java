@@ -10,14 +10,19 @@ public class ClientPlayer extends Player {
     private ClientThread _clientThread; // Client Thread
     private StateManager _stateManager; // 
 
-    public ClientPlayer(ClientThread clientThread, int id) {
+    public ClientPlayer(ClientThread clientThread, int id, StateManager sm) {
         super(clientThread.clientName(), id);
         this._clientThread = clientThread;
+        this._stateManager = sm;
     }
 
     @Override
     public String sendMessage(int msgType, String message) throws IOException {
         // sendMessage
+        if(msgType == 4) {  // 4debug
+            System.err.println("msgType = 4, and msg = " + message + "@" + super.name());// 4debug
+        }   // 4debug
+
         this._stateManager.registerMessage(msgType, message);
         this._stateManager.restartWaitingThread(super.id());
 
@@ -25,16 +30,21 @@ public class ClientPlayer extends Player {
         switch(msgType) {
             case 7:
             case 13:
+            case 16:
             case 17:
             case 21:
             case 22:
             case 23:
             case 24: {  // need response message
                 // wait response
-                this._stateManager.waitThread(super.id());
+                this._stateManager.waitThread(this._stateManager.playerNum() - 1);
 
                 // receive response
                 response = this._stateManager.popMessage();
+                break;
+            }
+            default: {
+                System.err.println("msgType : " + msgType);// 4debug
                 break;
             }
         }
@@ -49,7 +59,7 @@ public class ClientPlayer extends Player {
         String response = this.sendMessage(7, Message.serialize(7, null, this, drawCard));
         // receive Message = response
         // h/d return
-        switch (response) {
+        switch(response) {
             case "h": { // throw hand card
                 return super.exchangeHand(drawCard);
             }

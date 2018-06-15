@@ -12,7 +12,7 @@ public class Message {
 
     /*
         <<message Type>>
-        need response = 7, 13, 17, 21, 22, 23, 24
+        need response = 7, 13, 16, 17, 21, 22, 23, 24
         one way = others
     */
     public static String serialize(int msgType, Round r, Player p, Card card) {
@@ -60,6 +60,10 @@ public class Message {
             case 7: {
                 msg = "select card";
                 msg = parseCardSelection(msg, p, card);
+                break;
+            }
+            case 8: {
+                msg = "selection failed//Invalid selection...";
                 break;
             }
             case 9: {
@@ -148,11 +152,14 @@ public class Message {
         String[] msgStrs = s.split("//", Message.MAX_MESSAGE_LEN);
         switch(msgStrs[0]) {
             case "start round": {   // 0
+                Console.clearScreen(500);
                 Console.writeLn(msgStrs[1]);
                 break;
             }
             case "start turn": {    // 1
-                Console.clearScreen(500);
+                Console.newLn();
+                Console.newLn();
+                Console.newLn();
                 Console.writeLn("Start turn " + msgStrs[1] + ".");
                 for (int i = 2; i < msgStrs.length; i++) {
                     Console.writeLn(msgStrs[i]);
@@ -180,6 +187,7 @@ public class Message {
                 break;
             }
             case "select card": {   // 7
+                Console.newLn();
                 for (int i = 1; i < msgStrs.length; i++) {
                     Console.writeLn(msgStrs[i]);
                     if(i == 2) {
@@ -189,6 +197,10 @@ public class Message {
 
                 // send response. (return Type is "h/d" string)
                 response = cardSelection();
+                break;
+            }
+            case "selection failed": {  // 8
+                Console.writeLn(msgStrs[1]);
                 break;
             }
             case "notify throw card (you)": {   // 9
@@ -222,9 +234,8 @@ public class Message {
                 Console.writeLn(msgStrs[1]);
                 break;
             }
-            case "predict card": {  // 16
+            case "predict card": {  // 16   // need response
                 Console.writeLn(msgStrs[1]);
-
                 response = cardPrediction(msgStrs[2]);
                 break;
             }
@@ -235,9 +246,11 @@ public class Message {
                 break;
             }
             case "battle": {    // 18
+                Console.writeLn(msgStrs[1]);
                 break;
             }
             case "notify exchanged card": { // 19
+                Console.writeLn(msgStrs[1]);
                 break;
             }
             case "round finished": {    // 20
@@ -275,6 +288,7 @@ public class Message {
                 break;
             }
         }
+        System.err.println("debug print in Message deserialize, response = " + response + ", msgType = " + msgStrs[0]);// 4debug
 
         return response;
     }
@@ -411,7 +425,7 @@ public class Message {
             1,
             Integer.parseInt(maxNumStr),
             "",
-            "Which player would you select? Enter number (1 ~ " + maxNumStr + " ). : "
+            "Which player would you select? Enter number ( 1 ~ " + maxNumStr + " ). : "
             ));
     }
 

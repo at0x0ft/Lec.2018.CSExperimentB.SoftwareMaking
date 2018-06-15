@@ -137,7 +137,7 @@ public class StateManager implements IDisposable {
     public synchronized void waitThread(int key) {
         this._activeFlags[key] = false;
         this._waitingThreadNum++;
-        while(this._activeFlags[key]) {
+        while(!this._activeFlags[key]) {
             try {
                 wait();
             }
@@ -146,6 +146,7 @@ public class StateManager implements IDisposable {
             }
         }
         this._waitingThreadNum--;
+        // System.err.println("out id : " + key);  // 4debug
     }
 
     public synchronized void restartWaitingThread(int key) {
@@ -159,13 +160,6 @@ public class StateManager implements IDisposable {
         }
         notifyAll();
     }
-
-    public synchronized void printAllRegisteredPlayerName() {   // 4debug
-        for (int i = 0; i < this._clientPlayers.length; i++) {
-            Console.writeLn(this._clientPlayers[i].clientName());
-        }
-    }
-
 
     private String _message;
     private int _msgType;

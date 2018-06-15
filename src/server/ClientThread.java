@@ -108,13 +108,19 @@ public class ClientThread extends Thread implements IDisposable {
         switch(msgType) {
             case 7:
             case 13:
+            case 16:
             case 17:
             case 21:
             case 22:
             case 23:
             case 24: {
-                this._stateManager.registerMessage(msgType, this._exin.readLine());
-                this._stateManager.restartWaitingThread(ctidx());
+                System.err.println("before sending msg " + msgType);// 4debug
+                String response = this._exin.readLine();
+                System.err.println("response received. " + response);   // 4debug
+                this._stateManager.registerMessage(msgType, response);
+                // restart response waiting main thread
+                this._stateManager.restartWaitingThread(this._stateManager.playerNum() - 1);
+                System.err.println("after sending msg " + msgType);// 4debug
                 break;
             }
         }

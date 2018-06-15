@@ -88,6 +88,7 @@ public class Player implements ISendable {
     protected Card exchangeHand(Card card) {
         Card ret = this.hand();
         hand(card);
+        System.err.println("hand : " + hand().name() + ", throw : " + ret.name());//4debug
         return ret;
     }
 
@@ -123,7 +124,6 @@ public class Player implements ISendable {
 
     protected String extractCardTypeInfo(Game game) {
         String message = "Card list : ";
-        message += "//";
         if(game.hasKing()) {
             message += "0:King, ";
         }

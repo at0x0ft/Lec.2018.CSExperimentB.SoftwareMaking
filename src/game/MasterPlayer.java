@@ -17,6 +17,7 @@ public class MasterPlayer extends Player {
         switch(msgType) {
             case 7:
             case 13:
+            case 16:
             case 17:
             case 21:
             case 22:
@@ -27,6 +28,7 @@ public class MasterPlayer extends Player {
             }
             default: {  // only one way sending
                 Message.deserialize(message);
+                System.err.println("msgType : " + msgType);// 4debug
                 break;
             }
         }

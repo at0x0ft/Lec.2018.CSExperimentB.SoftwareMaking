@@ -38,7 +38,6 @@ public class Client extends GameBase {
     }
 
     private boolean connect() throws IOException {
-        // String hostname = null;
         while(true) {
             try {
                 this._socket = new Socket(InetAddress.getByName(hostnameInput()), portNumInput()); // Making the socket.
@@ -79,17 +78,11 @@ public class Client extends GameBase {
         
         Console.writeLn("Waiting gameroom master's acceptance...");
         
-        switch(this._exin.readLine()) {
-            case "y": {
-                this._exout.println(this.playerName());  // register playerName to ClientThread
-                break;
-            }
-            case "n": {
-                Console.writeLn("Access denied...");
-                return false;
-            }
+        if(this._exin.readLine().equals("n")) {
+            Console.writeLn("Access denied...");
+            return false;
         }
-        
+
         return true;
     }
 
@@ -103,7 +96,7 @@ public class Client extends GameBase {
     }
 
     public String hostnameInput() {
-        Console.write("Please input server's HOSTNAME : ");
+        Console.write("Please input server's IPAddress : ");
         return Console.readLn();
     }
 
@@ -111,7 +104,7 @@ public class Client extends GameBase {
         return Console.readNum(
             Server.MINPORTNUM,
             Server.MAXPORTNUM,
-            "Finding the server.",
+            "",
             "Please input the server PORT ("+ Server.MINPORTNUM + " <= PORT <= " + Server.MAXPORTNUM + ") : "
             );
     }
@@ -128,9 +121,6 @@ public class Client extends GameBase {
     public void startGame() throws IOException {
         Console.writeLn("Now, let's start the game!");
 
-        // create game class from here
-        while(Console.readLn().equals("f"))
-
         while(true) {
             // receive and deserialize the message
             boolean continueFlg = receiveMessage(this._exin.readLine());
@@ -142,6 +132,7 @@ public class Client extends GameBase {
     }
 
     private boolean receiveMessage(String inMsg) throws IOException {
+        System.err.println("inMsg (dbg) (in receiveMessage) : " + inMsg);
         String response = Message.deserialize(inMsg);
         if(response != null) {
             this._exout.println(response);

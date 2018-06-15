@@ -83,7 +83,7 @@ public class Server extends GameBase {
 
     private boolean startInvitation() throws IOException {
         try {
-            Console.writeLn("Your server info : HOSTNAME : " + Server.getLocalHostName() + ", PORT : " + port());
+            Console.writeLn("Your server info : IPAddress : " + Server.getLocalHostName() + ", PORT : " + port());
             Console.writeLn("Waiting for other player(s)...");
             while(true) {   // critical section...
                 while(this._stateManager.inviting() && this._stateManager.isFullCandidates()) {
@@ -110,8 +110,6 @@ public class Server extends GameBase {
             return false;
         }
 
-
-        this._stateManager.printAllRegisteredPlayerName();  // 4debug
         return true;
     }
 

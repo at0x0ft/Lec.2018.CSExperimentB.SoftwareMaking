@@ -78,7 +78,7 @@ public class Game {
         try {
             int i = 0;
             for (i = 0; i < numOfPlayers() - 1; i++) {
-                this._playersList[i] = new ClientPlayer(this._stateManager.clientThread(i), i);
+                this._playersList[i] = new ClientPlayer(this._stateManager.clientThread(i), i, sm);
             }
             this._playersList[i] = new MasterPlayer(masterName, i);
         }
@@ -114,8 +114,9 @@ public class Game {
         // Start the game.
         do {
             Round round = new Round(this);
-            this._finished = round.start();
+            round.start();
             this._finishedRoundList.add(round);
+            System.err.println("end one round dbg and hasFinished() : " + hasFinished());// 4debug
         } while(!hasFinished());
     }
 
