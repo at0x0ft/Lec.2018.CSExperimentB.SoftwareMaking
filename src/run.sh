@@ -1,2 +1,2 @@
 #! bin/bash
-java main.LoveLetter
+java main.LoveLetter 2>log.txt
