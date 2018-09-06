@@ -8,7 +8,7 @@
 
 This repos is for the software making exp in csexp-b in 2018 spring term.
 
-Using it for your school/univ's assignment task without reference, you would be punished heavily as plagiarism.
+Using it for your school/univ's assignment task without reference, you would be punished heavily as __plagiarism__ .
 
 If you want to use a part of this code, you should write reference URL.
 
@@ -16,4 +16,4 @@ Thank you.
 
 ---
 
-written by at0x0ft
+written by at0x0ft.
