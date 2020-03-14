@@ -16,7 +16,7 @@ __基本的には自由に使っていただいて構いません.__
 
 ### English
 
-This repos is for Software Making experiment in CS Experiment B in 2018 string term.
+This repos is for Software Making experiment in CS Experiment B in 2018 spring term.
 
 However, using it for your school/univ's assignment task without reference, you would be punished heavily as __plagiarism__ .
 
